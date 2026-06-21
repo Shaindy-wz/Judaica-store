@@ -1,0 +1,22 @@
+.button {
+  position: fixed;
+  bottom: 24px;
+  inset-inline-start: 24px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-whatsapp);
+  color: var(--color-white);
+  padding: 12px 18px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-hover);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+@media (max-width: 639px) {
+  .button span:last-child {
+    display: none;
+  }
+}

@@ -1,0 +1,48 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.drawer {
+  width: 100%;
+  max-width: 400px;
+  height: 100%;
+  background: var(--color-white);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.header h2 {
+  font-size: var(--text-xl);
+  margin: 0;
+}
+
+.header button {
+  background: none;
+  border: none;
+  font-size: var(--text-lg);
+}
+
+.items {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.empty {
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: 48px 0;
+}

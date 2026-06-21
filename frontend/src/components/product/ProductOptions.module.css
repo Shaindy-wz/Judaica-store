@@ -1,0 +1,32 @@
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.values {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.value,
+.active {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  font-size: var(--text-sm);
+}
+
+.active {
+  border-color: var(--color-navy);
+  background: var(--color-navy);
+  color: var(--color-white);
+}

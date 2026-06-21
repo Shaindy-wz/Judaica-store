@@ -1,0 +1,39 @@
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  margin: 0;
+}
+
+.description {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.specs {
+  border-top: 1px solid var(--color-border);
+  padding-top: 16px;
+  margin: 0;
+}
+
+.specRow {
+  display: flex;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: var(--text-sm);
+}
+
+.specRow dt {
+  font-weight: 600;
+  min-width: 100px;
+  color: var(--color-text-secondary);
+}
+
+.specRow dd {
+  margin: 0;
+}

@@ -1,0 +1,19 @@
+.strip {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  padding: 16px 24px;
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.link {
+  white-space: nowrap;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.link:hover {
+  color: var(--color-navy);
+}

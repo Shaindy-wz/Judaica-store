@@ -1,0 +1,11 @@
+.strip {
+  background: var(--color-gold);
+  color: var(--color-white);
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  padding: 10px 24px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  flex-wrap: wrap;
+}

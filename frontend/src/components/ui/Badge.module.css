@@ -1,0 +1,21 @@
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  background: var(--color-navy);
+  color: var(--color-white);
+}
+
+.new {
+  background: var(--color-success);
+}
+
+.sale {
+  background: var(--color-error);
+}
+
+.default {
+  background: var(--color-gold);
+}

@@ -1,0 +1,27 @@
+.section {
+  padding: 48px 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.subtitle {
+  color: var(--color-text-secondary);
+  margin: 4px 0 0;
+}
+
+.link {
+  color: var(--color-navy);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.link:hover {
+  color: var(--color-gold);
+}

@@ -1,0 +1,21 @@
+.page {
+  padding-bottom: 48px;
+}
+
+.empty {
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: 48px 0;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: 2fr 1fr;
+  }
+}

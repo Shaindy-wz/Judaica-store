@@ -1,0 +1,17 @@
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.current {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.original {
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}

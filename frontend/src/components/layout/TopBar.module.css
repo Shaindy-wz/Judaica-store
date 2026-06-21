@@ -1,0 +1,33 @@
+.topbar {
+  background: var(--color-navy);
+  color: var(--color-white);
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  font-size: var(--text-xs);
+}
+
+.left,
+.right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.left a,
+.right a {
+  color: var(--color-white);
+}
+
+.left a:hover,
+.right a:hover {
+  color: var(--color-gold-light);
+}
+
+@media (max-width: 767px) {
+  .topbar {
+    display: none;
+  }
+}

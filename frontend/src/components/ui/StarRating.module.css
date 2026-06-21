@@ -1,0 +1,31 @@
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stars {
+  display: inline-flex;
+  letter-spacing: 1px;
+}
+
+.filled {
+  color: var(--color-gold);
+}
+
+.empty {
+  color: var(--color-border);
+}
+
+.count {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.sm .stars {
+  font-size: var(--text-sm);
+}
+
+.md .stars {
+  font-size: var(--text-lg);
+}

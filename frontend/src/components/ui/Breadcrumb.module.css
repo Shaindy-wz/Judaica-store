@@ -1,0 +1,22 @@
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  padding: 16px 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.item a:hover {
+  color: var(--color-navy);
+}
+
+.separator {
+  color: var(--color-text-muted);
+}
