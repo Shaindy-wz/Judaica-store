@@ -1,7 +1,6 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 const CartContext = createContext();
-const STORAGE_KEY = 'cart';
 
 function calculateDiscount(subtotal, coupon) {
   if (!coupon) return 0;
@@ -14,19 +13,9 @@ function lineKey(id, variantId) {
 }
 
 export function CartProvider({ children }) {
-  const [items, setItems] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? [];
-    } catch {
-      return [];
-    }
-  });
+  const [items, setItems] = useState([]);
   const [coupon, setCoupon] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items]);
 
   const addToCart = (product, qty = 1, variantId = null) => {
     setItems((prev) => {
@@ -61,7 +50,7 @@ export function CartProvider({ children }) {
 
   const applyCoupon = async (code) => {
     const couponService = await import('../services/couponService');
-    const result = await couponService.default.validate(code);
+    const result = await couponService.default.validate(code, subtotal);
     setCoupon(result);
     return result;
   };

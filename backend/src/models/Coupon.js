@@ -11,6 +11,6 @@ const CouponSchema = new Schema({
   usageLimit: Number,
   usedCount: { type: Number, default: 0 },
   active: { type: Boolean, default: true },
-});
+}, { timestamps: true });
 
 export default mongoose.model('Coupon', CouponSchema);

@@ -42,7 +42,20 @@
 }
 
 .empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
   color: var(--color-text-muted);
   text-align: center;
   padding: 48px 0;
+}
+
+.continueLink {
+  color: var(--color-white);
+  background: var(--color-navy);
+  border-radius: var(--radius-sm);
+  padding: 10px 20px;
+  font-weight: 600;
+  text-decoration: none;
 }
