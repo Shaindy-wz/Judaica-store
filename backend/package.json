@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "seed:categories": "node src/scripts/seedCategories.js",
+    "seed:products": "node src/scripts/seedProducts.js"
   },
   "keywords": [],
   "author": "",
