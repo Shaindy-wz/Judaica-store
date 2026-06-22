@@ -94,11 +94,11 @@ ProductSchema.pre('findOneAndUpdate', async function () {
 });
 
 ProductSchema.virtual('hasVariants').get(function () {
-  return this.variants.length > 1;
+  return (this.variants?.length ?? 0) > 1;
 });
 
 ProductSchema.virtual('priceRange').get(function () {
-  if (!this.variants.length) return { min: this.basePrice, max: this.basePrice };
+  if (!this.variants?.length) return { min: this.basePrice, max: this.basePrice };
   const prices = this.variants.map((v) => v.price);
   return { min: Math.min(...prices), max: Math.max(...prices) };
 });

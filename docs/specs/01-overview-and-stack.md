@@ -70,9 +70,9 @@ This spec describes a full-stack Hebrew e-commerce store. The frontend (componen
 | DB | MongoDB + Mongoose | Confirmed |
 | Auth | JWT (basic) + JWT with role field (extended) | **Decision pending** — see §15 |
 | **Payments** | **Cardcom / PayPlus / Tranzila / Meshulam** (choose one — see §14) | **Requires "choose provider" decision** |
-| **Invoice service** | **Green Invoice / EZcount / iCount (API)** | **Required — confirm with accountant/business** |
+| **Invoice service** | **Green Invoice (API)** | Confirmed — implemented via `services/greenInvoiceService.js`; VAT registration status still pending confirmation with accountant |
 | **Image hosting** | AWS S3 / Cloudinary (store images outside app server) | **Required** |
-| **Email service** | Resend / SendGrid / Brevo (order confirmations, password reset) | **Required** |
+| **Email service** | `nodemailer` over generic SMTP (works with Resend / SendGrid / Brevo's SMTP relay, or any SMTP provider — just swap `.env` credentials) | Confirmed — implemented via `services/emailService.js` |
 | **Shabbat times** | Hebcal API (free tier) | **Required** |
 | **Analytics** | Google Analytics 4 + Meta Pixel | **Required** |
 | **Search** | MongoDB text index + Hebrew normalisation on server (no Elasticsearch initially) | **Required** |
