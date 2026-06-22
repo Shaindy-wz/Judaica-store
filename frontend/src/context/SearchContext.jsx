@@ -17,7 +17,7 @@ export function SearchProvider({ children }) {
     }
     debounceRef.current = setTimeout(async () => {
       const data = await searchService.search(query.trim());
-      setResults(data);
+      setResults(data.items ?? []);
     }, 300);
     return () => clearTimeout(debounceRef.current);
   }, [query]);

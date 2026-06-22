@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { normalizeHebrew } from '../utils/hebrewSearchNormalize.js';
 
 const { Schema } = mongoose;
 
@@ -45,6 +46,8 @@ const ProductSchema = new Schema(
     ratingAverage: { type: Number, default: 0 },
     ratingCount: { type: Number, default: 0 },
 
+    searchTokens: [String],
+
     inStock: { type: Boolean, default: true },
     featured: { type: Boolean, default: false },
 
@@ -56,12 +59,46 @@ const ProductSchema = new Schema(
   { timestamps: true }
 );
 
+// Computes normalised (niqqud/dagesh-stripped) variants of the product name + tags,
+// so search matches regardless of vowel marks.
+function computeSearchTokens(name, tags = []) {
+  const normalizedName = normalizeHebrew(name);
+  const words = normalizedName.split(/\s+/).filter(Boolean);
+  const tokens = new Set([normalizedName, ...words]);
+  for (const tag of tags || []) {
+    tokens.add(normalizeHebrew(tag));
+  }
+  return Array.from(tokens).filter(Boolean);
+}
+
+ProductSchema.pre('save', function () {
+  if (this.isModified('name') || this.isModified('tags') || this.isNew) {
+    this.searchTokens = computeSearchTokens(this.name, this.tags);
+  }
+});
+
+// findOneAndUpdate/findByIdAndUpdate (e.g. upserts in seed scripts, future admin edit
+// routes) bypass the 'save' middleware above, so searchTokens must be recomputed here too.
+ProductSchema.pre('findOneAndUpdate', async function () {
+  const update = this.getUpdate();
+  const set = update.$set ?? update;
+  if (set.name === undefined && set.tags === undefined) return;
+
+  const existing = await this.model.findOne(this.getQuery()).select('name tags').lean();
+  const name = set.name ?? existing?.name ?? '';
+  const tags = set.tags ?? existing?.tags ?? [];
+  const tokens = computeSearchTokens(name, tags);
+
+  if (update.$set) update.$set.searchTokens = tokens;
+  else update.searchTokens = tokens;
+});
+
 ProductSchema.virtual('hasVariants').get(function () {
-  return this.variants.length > 1;
+  return (this.variants?.length ?? 0) > 1;
 });
 
 ProductSchema.virtual('priceRange').get(function () {
-  if (!this.variants.length) return { min: this.basePrice, max: this.basePrice };
+  if (!this.variants?.length) return { min: this.basePrice, max: this.basePrice };
   const prices = this.variants.map((v) => v.price);
   return { min: Math.min(...prices), max: Math.max(...prices) };
 });

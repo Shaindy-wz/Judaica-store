@@ -1,0 +1,25 @@
+.inStock,
+.outOfStock,
+.lowStock,
+.muted {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.inStock {
+  color: var(--color-success);
+}
+
+.outOfStock {
+  color: var(--color-error);
+}
+
+.lowStock {
+  color: var(--color-gold);
+}
+
+.muted {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}

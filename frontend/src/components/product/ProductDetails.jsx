@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import ProductPriceRange from './ProductPriceRange';
 import ProductOptions from './ProductOptions';
+import InventoryStatus from './InventoryStatus';
 import AddToCartButton from './AddToCartButton';
 import styles from './ProductDetails.module.css';
 
@@ -11,7 +12,11 @@ export default function ProductDetails({ product }) {
   const hasVariants = product.variants?.length > 1;
   const priceRange = product.priceRange ?? { min: product.basePrice, max: product.basePrice };
   const activePrice = matchedVariant?.price ?? priceRange.min;
-  const canAddToCart = !hasVariants || matchedVariant;
+
+  const requiresSelection = hasVariants && !matchedVariant;
+  const inStock = hasVariants ? (matchedVariant?.inStock ?? true) : product.inStock;
+  const stockQuantity = hasVariants ? matchedVariant?.stockQuantity : undefined;
+  const canAddToCart = !requiresSelection && inStock;
 
   return (
     <div className={styles.details}>
@@ -32,6 +37,11 @@ export default function ProductDetails({ product }) {
           }}
         />
       )}
+      <InventoryStatus
+        inStock={inStock}
+        stockQuantity={stockQuantity}
+        requiresSelection={requiresSelection}
+      />
       <AddToCartButton product={product} variant={matchedVariant} disabled={!canAddToCart} />
       {product.description && <p className={styles.description}>{product.description}</p>}
       {product.specs && (
