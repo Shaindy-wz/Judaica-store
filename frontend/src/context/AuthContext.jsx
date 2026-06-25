@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import authService from '../services/authService';
+import authService from '../services/authService.js';
 
 const AuthContext = createContext();
 
@@ -7,32 +7,29 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Restore session on mount by validating the HTTP-Only cookie with the server
   useEffect(() => {
-    if (!localStorage.getItem('token')) {
-      setLoading(false);
-      return;
-    }
     authService
       .me()
-      .then(setUser)
-      .catch(() => authService.logout())
+      .then((u) => setUser(u))
+      .catch(() => setUser(null))
       .finally(() => setLoading(false));
   }, []);
 
   const login = async (email, password) => {
-    const loggedInUser = await authService.login(email, password);
-    setUser(loggedInUser);
-    return loggedInUser;
+    const data = await authService.login(email, password);
+    setUser(data.user);
+    return data.user;
   };
 
-  const register = async (data) => {
-    const newUser = await authService.register(data);
-    setUser(newUser);
-    return newUser;
+  const register = async (formData) => {
+    const data = await authService.register(formData);
+    setUser(data.user);
+    return data.user;
   };
 
-  const logout = () => {
-    authService.logout();
+  const logout = async () => {
+    await authService.logout();
     setUser(null);
   };
 

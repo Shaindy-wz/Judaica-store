@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { normalizeHebrew } from '../utils/hebrewSearchNormalize.js';
 
 const { Schema } = mongoose;
 
@@ -45,6 +46,8 @@ const ProductSchema = new Schema(
     ratingAverage: { type: Number, default: 0 },
     ratingCount: { type: Number, default: 0 },
 
+    searchTokens: [String],
+
     inStock: { type: Boolean, default: true },
     featured: { type: Boolean, default: false },
 
@@ -55,6 +58,11 @@ const ProductSchema = new Schema(
   },
   { timestamps: true }
 );
+
+ProductSchema.pre('save', function (next) {
+  this.searchTokens = [normalizeHebrew(this.name)];
+  next();
+});
 
 ProductSchema.virtual('hasVariants').get(function () {
   return this.variants.length > 1;

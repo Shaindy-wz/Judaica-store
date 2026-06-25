@@ -1,0 +1,72 @@
+.uploader { display: flex; flex-direction: column; gap: 1rem; }
+
+.dropzone {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.dropzone:hover, .dropzone:focus {
+  border-color: var(--color-navy);
+  background: #f0f4ff;
+  outline: none;
+}
+
+.hiddenInput { display: none; }
+
+.error { color: var(--color-error); font-size: 0.875rem; }
+
+.previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.preview {
+  position: relative;
+  width: 100px;
+}
+
+.mainBadge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--color-navy);
+  color: #fff;
+  font-size: 0.65rem;
+  padding: 2px 5px;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.thumb {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  gap: 2px;
+}
+
+.actions button {
+  flex: 1;
+  padding: 2px;
+  font-size: 0.75rem;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.actions button:disabled { opacity: 0.3; cursor: default; }
+.removeBtn { color: var(--color-error); }

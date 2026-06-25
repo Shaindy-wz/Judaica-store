@@ -1,11 +1,14 @@
 import { Link } from 'react-router-dom';
 import Navbar from './Navbar';
-import SearchBar from '../ui/SearchBar';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
+import { useSearch } from '../../context/SearchContext';
 import styles from './Header.module.css';
 
 export default function Header() {
   const { itemCount, openDrawer } = useCart();
+  const { user } = useAuth();
+  const { setIsOpen } = useSearch();
 
   return (
     <header className={styles.header}>
@@ -13,8 +16,20 @@ export default function Header() {
         <Link to="/" className={styles.logo}>
           [שם האתר]
         </Link>
-        <SearchBar />
         <div className={styles.actions}>
+          {user?.role === 'admin' && (
+            <Link to="/admin" className={styles.adminLink} aria-label="פאנל ניהול">
+              ניהול
+            </Link>
+          )}
+          <button
+            type="button"
+            aria-label="חיפוש מוצרים"
+            className={styles.iconLink}
+            onClick={() => setIsOpen(true)}
+          >
+            🔍
+          </button>
           <Link to="/account" aria-label="החשבון שלי" className={styles.iconLink}>
             👤
           </Link>
