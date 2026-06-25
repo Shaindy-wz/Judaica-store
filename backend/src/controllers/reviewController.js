@@ -1,20 +1,7 @@
 import Review from '../models/Review.js';
 import Order from '../models/Order.js';
-import Product from '../models/Product.js';
 
 const VERIFIED_STATUSES = ['paid', 'shipped', 'delivered'];
-
-async function recalcProductRating(productId) {
-  const [stats] = await Review.aggregate([
-    { $match: { product: productId, status: 'approved' } },
-    { $group: { _id: null, average: { $avg: '$rating' }, count: { $sum: 1 } } },
-  ]);
-
-  await Product.findByIdAndUpdate(productId, {
-    ratingAverage: stats?.average ?? 0,
-    ratingCount: stats?.count ?? 0,
-  });
-}
 
 export async function getProductReviews(req, res) {
   const reviews = await Review.find({ product: req.params.id, status: 'approved' })
@@ -66,36 +53,4 @@ export async function getSummary(req, res) {
   ]);
 
   res.json({ average: stats?.average ?? 0, count: stats?.count ?? 0 });
-}
-
-export async function listPending(req, res) {
-  const reviews = await Review.find({ status: 'pending' })
-    .populate('product', 'name slug')
-    .populate('user', 'firstName lastName')
-    .sort({ createdAt: 1 });
-
-  res.json(reviews);
-}
-
-export async function approve(req, res) {
-  const review = await Review.findById(req.params.id);
-  if (!review) return res.status(404).json({ message: 'הביקורת לא נמצאה' });
-
-  review.status = 'approved';
-  await review.save();
-  await recalcProductRating(review.product);
-
-  res.json(review);
-}
-
-export async function reject(req, res) {
-  const review = await Review.findById(req.params.id);
-  if (!review) return res.status(404).json({ message: 'הביקורת לא נמצאה' });
-
-  const wasApproved = review.status === 'approved';
-  review.status = 'rejected';
-  await review.save();
-  if (wasApproved) await recalcProductRating(review.product);
-
-  res.json(review);
 }

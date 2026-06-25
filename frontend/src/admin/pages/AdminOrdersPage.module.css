@@ -1,0 +1,77 @@
+.page { max-width: 1100px; }
+.title { font-family: var(--font-display); color: var(--color-navy); margin-bottom: 1.5rem; }
+.error { color: var(--color-error); }
+.loading { color: var(--color-text-muted); padding: 2rem 0; }
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.search {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  width: 240px;
+  direction: rtl;
+}
+
+.statusTabs { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+
+.tab {
+  padding: 0.35rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+.tab:hover { border-color: var(--color-navy); }
+.tab.active { background: var(--color-navy); color: #fff; border-color: var(--color-navy); }
+
+.total { color: var(--color-text-muted); font-size: 0.875rem; margin-right: auto; }
+
+.mono { font-family: monospace; color: var(--color-text-muted); font-size: 0.85rem; }
+
+.badge {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.pending  { background: #fff3cd; color: #856404; }
+.paid     { background: #d1e7dd; color: #0a3622; }
+.shipped  { background: #cff4fc; color: #055160; }
+.delivered{ background: #d1e7dd; color: #0a3622; }
+.cancelled{ background: #f8d7da; color: #842029; }
+
+.viewBtn {
+  padding: 4px 12px;
+  background: var(--color-navy);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+.pagination button {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.pagination button:disabled { opacity: 0.4; cursor: default; }

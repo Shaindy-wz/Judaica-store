@@ -1,5 +1,8 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import productsRouter from './routes/products.js';
 import categoriesRouter from './routes/categories.js';
 import ordersRouter from './routes/orders.js';
@@ -7,16 +10,20 @@ import authRouter from './routes/auth.js';
 import couponsRouter from './routes/coupons.js';
 import searchRouter from './routes/search.js';
 import reviewsRouter from './routes/reviews.js';
-import adminReviewsRouter from './routes/admin/adminReviews.js';
-import adminCouponsRouter from './routes/admin/adminCoupons.js';
-import adminOrdersRouter from './routes/admin/adminOrders.js';
-import { requireAuth, adminOnly } from './middleware/auth.js';
+import adminRouter from './routes/admin.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true,
+}));
+app.use(cookieParser());
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 app.use('/api/products', productsRouter);
 app.use('/api/categories', categoriesRouter);
@@ -25,9 +32,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/coupons', couponsRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/reviews', reviewsRouter);
-app.use('/api/admin/reviews', requireAuth, adminOnly, adminReviewsRouter);
-app.use('/api/admin/coupons', requireAuth, adminOnly, adminCouponsRouter);
-app.use('/api/admin/orders', requireAuth, adminOnly, adminOrdersRouter);
+app.use('/api/admin', adminRouter);
 
 app.use(notFound);
 app.use(errorHandler);
