@@ -15,6 +15,7 @@ const EMPTY_FORM = {
   images: [],
   options: [],
   variants: [],
+  stockQuantity: '',
   specs: { material: '', kashrut: '', hashgacha: '', tradition: '', craftsmanship: '' },
   returnPolicy: { returnable: true, customizable: false, nonReturnableReason: '' },
   inStock: true, featured: false,
@@ -165,6 +166,7 @@ export default function AdminProductFormPage() {
         tags: form.tags.split(',').map((t) => t.trim()).filter(Boolean),
         basePrice: Number(form.basePrice),
         originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined,
+        stockQuantity: form.stockQuantity !== '' ? Number(form.stockQuantity) : undefined,
         variants: form.variants.map((v) => ({
           ...v,
           price: Number(v.price),
@@ -265,6 +267,16 @@ export default function AdminProductFormPage() {
             <Field label="מק״ט">
               <input value={form.sku} onChange={(e) => set('sku', e.target.value)} dir="ltr" />
             </Field>
+            {form.variants.length === 0 && (
+              <Field label="כמות במלאי (ריק = ללא מעקב)">
+                <input
+                  type="number" min="0"
+                  value={form.stockQuantity}
+                  onChange={(e) => set('stockQuantity', e.target.value)}
+                  placeholder="למשל: 50"
+                />
+              </Field>
+            )}
           </div>
         </section>
 

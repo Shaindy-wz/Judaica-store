@@ -28,7 +28,7 @@ export default function CartDrawer() {
               ))}
             </div>
             <CouponInput />
-            <CartSummary />
+            <CartSummary checkoutHref="/checkout" />
           </>
         )}
       </aside>

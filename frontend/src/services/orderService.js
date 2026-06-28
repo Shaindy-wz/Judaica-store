@@ -4,6 +4,10 @@ function create(order) {
   return api.post('/orders', order);
 }
 
+function mockPay(payload) {
+  return api.post('/orders/mock-pay', payload);
+}
+
 function myOrders() {
   return api.get('/orders/my');
 }
@@ -12,4 +16,4 @@ function getById(id) {
   return api.get(`/orders/${id}`);
 }
 
-export default { create, myOrders, getById };
+export default { create, myOrders, getById, mockPay };

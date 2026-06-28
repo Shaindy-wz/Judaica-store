@@ -14,6 +14,18 @@ export function requireAuth(req, res, next) {
   }
 }
 
+export function optionalAuth(req, res, next) {
+  const token = req.cookies?.token;
+  if (token) {
+    try {
+      const payload = jwt.verify(token, process.env.JWT_SECRET);
+      req.userId = payload.id;
+      req.userRole = payload.role;
+    } catch { /* not logged in — that's fine */ }
+  }
+  next();
+}
+
 export function adminOnly(req, res, next) {
   if (req.userRole !== 'admin') return res.status(403).json({ message: 'Admin access required' });
   next();

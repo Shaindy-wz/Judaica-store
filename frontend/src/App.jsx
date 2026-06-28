@@ -10,6 +10,9 @@ import ShopPage from './pages/ShopPage';
 import CategoryPage from './pages/CategoryPage';
 import ProductPage from './pages/ProductPage';
 import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrdersPage from './pages/OrdersPage';
+import OrderDetailPage from './pages/OrderDetailPage';
 import AccountPage from './pages/AccountPage';
 import NotFoundPage from './pages/NotFoundPage';
 import SearchResultsPage from './pages/SearchResultsPage';
@@ -59,6 +62,9 @@ export default function App() {
               <Route path="product/:slug" element={<ProductPage />} />
               <Route path="search" element={<SearchResultsPage />} />
               <Route path="cart" element={<CartPage />} />
+              <Route path="checkout" element={<CheckoutPage />} />
+              <Route path="orders" element={<OrdersPage />} />
+              <Route path="orders/:id" element={<OrderDetailPage />} />
               <Route path="account" element={<AccountPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>

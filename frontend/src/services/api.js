@@ -11,8 +11,10 @@ async function request(path, options = {}) {
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ message: res.statusText }));
-    throw new Error(error.message || 'Request failed');
+    const body = await res.json().catch(() => ({ message: res.statusText }));
+    const err = new Error(body.message || 'Request failed');
+    Object.assign(err, body); // preserve extra fields like outOfStock[]
+    throw err;
   }
 
   if (res.status === 204) return null;

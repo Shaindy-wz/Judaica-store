@@ -1,6 +1,29 @@
 import Category from '../../models/Category.js';
 import Product from '../../models/Product.js';
 
+function toSlug(str) {
+  return str
+    .normalize('NFKD')
+    .replace(/[֑-ׇ]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w֐-׿-]/g, '')
+    .toLowerCase()
+    .slice(0, 80);
+}
+
+async function uniqueSlug(base, excludeId = null) {
+  let slug = base || 'category';
+  let n = 1;
+  while (true) {
+    const filter = { slug };
+    if (excludeId) filter._id = { $ne: excludeId };
+    const exists = await Category.exists(filter);
+    if (!exists) return slug;
+    slug = `${base}-${n++}`;
+  }
+}
+
 export async function listCategories(req, res) {
   const all = await Category.find().sort({ order: 1, name: 1 });
 
@@ -21,15 +44,23 @@ export async function listCategories(req, res) {
 }
 
 export async function createCategory(req, res) {
-  const category = await Category.create(req.body);
+  const { name, parent, image, order } = req.body;
+  if (!name?.trim()) return res.status(400).json({ message: 'שם הקטגוריה חובה' });
+
+  const slug = await uniqueSlug(toSlug(name));
+  const category = await Category.create({ name: name.trim(), slug, parent: parent || undefined, image, order });
   res.status(201).json(category);
 }
 
 export async function updateCategory(req, res) {
-  const category = await Category.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const { name, parent, image, order } = req.body;
+  const data = { parent: parent || undefined, image, order };
+  if (name?.trim()) {
+    data.name = name.trim();
+    data.slug = await uniqueSlug(toSlug(name), req.params.id);
+  }
+
+  const category = await Category.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: true });
   if (!category) return res.status(404).json({ message: 'Category not found' });
   res.json(category);
 }

@@ -7,7 +7,7 @@ import {
 } from '../../services/adminService';
 import styles from './AdminCategoriesPage.module.css';
 
-const EMPTY = { name: '', slug: '', parent: '' };
+const EMPTY = { name: '', parent: '' };
 
 export default function AdminCategoriesPage() {
   const [tree, setTree] = useState([]);
@@ -35,7 +35,7 @@ export default function AdminCategoriesPage() {
   }
 
   function openEdit(cat) {
-    setForm({ name: cat.name, slug: cat.slug ?? '', parent: cat.parent ?? '' });
+    setForm({ name: cat.name, parent: cat.parent ?? '' });
     setFormError('');
     setModal({ mode: 'edit', id: cat._id });
   }
@@ -47,7 +47,7 @@ export default function AdminCategoriesPage() {
     if (!form.name.trim()) { setFormError('שם הקטגוריה חובה'); return; }
     setSaving(true);
     try {
-      const payload = { name: form.name.trim(), slug: form.slug.trim() || undefined, parent: form.parent || undefined };
+      const payload = { name: form.name.trim(), parent: form.parent || undefined };
       if (modal.mode === 'add') {
         await createCategory(payload);
       } else {
@@ -111,14 +111,6 @@ export default function AdminCategoriesPage() {
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               className={styles.input}
               autoFocus
-            />
-            <label className={styles.label}>Slug (URL)</label>
-            <input
-              value={form.slug}
-              onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
-              className={styles.input}
-              dir="ltr"
-              placeholder="יווצר אוטומטית אם ריק"
             />
             <div className={styles.modalActions}>
               <button onClick={closeModal} className={styles.cancelBtn}>ביטול</button>
