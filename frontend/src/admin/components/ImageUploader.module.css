@@ -1,29 +1,35 @@
-.uploader { display: flex; flex-direction: column; gap: 1rem; }
+.uploader { display: flex; flex-direction: column; gap: var(--space-4); }
 
 .dropzone {
   border: 2px dashed var(--color-border);
   border-radius: var(--radius-md);
-  padding: 2rem;
+  padding: var(--space-6);
   text-align: center;
   cursor: pointer;
   color: var(--color-text-secondary);
+  background: var(--color-surface);
   transition: border-color var(--transition), background var(--transition);
 }
 
 .dropzone:hover, .dropzone:focus {
-  border-color: var(--color-navy);
-  background: #f0f4ff;
+  border-color: var(--color-gold);
+  background: var(--color-surface-alt);
   outline: none;
+}
+
+.dropzone:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
 }
 
 .hiddenInput { display: none; }
 
-.error { color: var(--color-error); font-size: 0.875rem; }
+.error { color: var(--color-error); font-size: var(--text-sm); }
 
 .previews {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 
 .preview {
@@ -34,12 +40,12 @@
 .mainBadge {
   position: absolute;
   top: 4px;
-  right: 4px;
+  inset-inline-end: 4px;
   background: var(--color-navy);
-  color: #fff;
-  font-size: 0.65rem;
+  color: var(--color-white);
+  font-size: var(--text-xs);
   padding: 2px 5px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   z-index: 1;
 }
 
@@ -61,12 +67,15 @@
 .actions button {
   flex: 1;
   padding: 2px;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   border: 1px solid var(--color-border);
-  background: #fff;
-  border-radius: 3px;
+  background: var(--color-white);
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  transition: border-color var(--transition);
 }
 
+.actions button:hover:not(:disabled) { border-color: var(--color-navy); }
+.actions button:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 1px; }
 .actions button:disabled { opacity: 0.3; cursor: default; }
 .removeBtn { color: var(--color-error); }

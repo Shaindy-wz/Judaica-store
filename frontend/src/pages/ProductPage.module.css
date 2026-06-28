@@ -1,34 +1,37 @@
 .layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 32px;
-  padding-bottom: 48px;
+  gap: var(--space-7);
+  padding-bottom: var(--space-8);
 }
 
 .error {
   color: var(--color-error);
+  text-align: center;
+  padding: var(--space-8) 0;
 }
 
 @media (min-width: 1024px) {
   .layout {
     grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
   }
 }
 
 .reviewsSection {
-  padding-bottom: 48px;
+  padding-bottom: var(--space-8);
 }
 
 .reviewsLayout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 32px;
+  gap: var(--space-7);
 }
 
 .reviewsAside {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-5);
 }
 
 @media (min-width: 1024px) {

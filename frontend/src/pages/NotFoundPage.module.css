@@ -1,8 +1,36 @@
 .page {
   text-align: center;
-  padding: 96px 24px;
+  padding: var(--space-9) var(--space-5);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
+  min-height: 50vh;
+  justify-content: center;
+}
+
+.code {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  font-weight: 700;
+  line-height: 1;
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  color: var(--color-navy);
+  margin: 0;
+}
+
+.text {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-3);
+  max-width: 480px;
 }

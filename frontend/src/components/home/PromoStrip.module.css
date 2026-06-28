@@ -1,11 +1,29 @@
 .strip {
-  background: var(--color-gold);
-  color: var(--color-white);
+  background: var(--gradient-navy);
+  color: var(--color-gold-light);
   display: flex;
   justify-content: center;
-  gap: 32px;
-  padding: 10px 24px;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-3) 24px;
+  font-family: var(--font-body);
   font-size: var(--text-sm);
   font-weight: 500;
+  letter-spacing: var(--letter-spacing-wide);
+  border-bottom: 1px solid var(--color-gold-dark);
   flex-wrap: wrap;
+  text-align: center;
+}
+
+.item {
+  position: relative;
+  color: var(--color-white);
+  opacity: 0.92;
+}
+
+.item::before {
+  content: '✦';
+  display: inline-block;
+  margin-inline-end: 8px;
+  color: var(--color-gold-light);
 }

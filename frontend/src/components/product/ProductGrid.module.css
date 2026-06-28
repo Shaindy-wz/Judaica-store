@@ -1,18 +1,20 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  gap: var(--space-5);
 }
 
 .empty {
   color: var(--color-text-muted);
+  font-size: var(--text-lg);
   text-align: center;
-  padding: 48px 0;
+  padding: var(--space-8) 0;
 }
 
 @media (min-width: 768px) {
   .grid {
     grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
   }
 }
 

@@ -1,17 +1,33 @@
 .page {
-  padding-bottom: 48px;
+  padding-bottom: var(--space-8);
 }
 
 .empty {
   color: var(--color-text-muted);
   text-align: center;
-  padding: 48px 0;
+  padding: var(--space-9) 0;
+  font-size: var(--text-lg);
 }
 
 .layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 32px;
+  gap: var(--space-7);
+}
+
+.items {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5) var(--space-6);
+}
+
+.side {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5) var(--space-6);
+  align-self: start;
 }
 
 @media (min-width: 1024px) {

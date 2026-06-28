@@ -1,35 +1,67 @@
 .navbar {
-  border-top: 1px solid var(--color-border);
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  margin-top: -22px;
+  padding: 0 24px;
 }
 
 .list {
   display: flex;
-  gap: 28px;
+  align-items: center;
+  gap: 4px;
   list-style: none;
   margin: 0;
-  padding: 12px 0;
+  padding: 8px 20px;
+  max-width: calc(1280px - 48px);
+  background: var(--gradient-navy);
+  border: 1px solid rgba(201, 162, 39, 0.5);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-xl);
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: var(--letter-spacing-tight);
+  overflow-x: auto;
 }
 
 .list > li {
   position: relative;
+  flex-shrink: 0;
+}
+
+.list > li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  inset-inline-start: -2px;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(201, 162, 39, 0.5);
 }
 
 .list a {
-  transition: color var(--transition);
+  position: relative;
+  transition: color var(--transition), background var(--transition);
   display: flex;
   align-items: center;
   gap: 4px;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .list a:hover {
-  color: var(--color-gold);
+  color: var(--color-navy-deep);
+  background: var(--gradient-gold);
 }
 
 .active {
-  color: var(--color-navy);
+  color: var(--color-navy-deep) !important;
   font-weight: 700;
+  background: var(--gradient-gold);
 }
 
 .arrow {
@@ -83,22 +115,23 @@
 
 /* Admin link */
 .adminItem {
-  margin-right: auto;
-  padding-right: 16px;
-  border-right: 1px solid var(--color-border);
+  margin-inline-start: auto;
+  padding-inline-start: 16px;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .adminNavLink {
-  color: var(--color-navy) !important;
+  color: var(--color-gold-light) !important;
   font-weight: 700 !important;
 }
 
 .adminNavLink:hover {
-  color: var(--color-gold) !important;
+  color: var(--color-navy-deep) !important;
 }
 
 .adminNavLinkActive {
-  color: var(--color-gold) !important;
+  background: var(--gradient-gold);
+  color: var(--color-navy-deep) !important;
 }
 
 @media (max-width: 1023px) {

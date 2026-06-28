@@ -2,12 +2,12 @@
   display: flex;
   min-height: 100vh;
   direction: rtl;
-  background: #f4f6f9;
+  background: var(--color-bg);
   font-family: var(--font-body);
 }
 
 .main {
   flex: 1;
-  padding: 2rem;
+  padding: var(--space-6);
   overflow-y: auto;
 }

@@ -1,19 +1,26 @@
 .strip {
   display: flex;
-  gap: 24px;
+  gap: var(--space-3);
   overflow-x: auto;
-  padding: 16px 24px;
+  padding: var(--space-4) 24px;
   background: var(--color-white);
   border-bottom: 1px solid var(--color-border);
 }
 
 .link {
   white-space: nowrap;
+  font-family: var(--font-body);
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-text-secondary);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
 }
 
 .link:hover {
   color: var(--color-navy);
+  border-color: var(--color-gold);
+  background: var(--color-surface-alt);
 }

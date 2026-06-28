@@ -24,8 +24,15 @@ export default function AdminSidebar() {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.brand}>
-        <span className={styles.brandIcon}>🕍</span>
-        <span className={styles.brandText}>פאנל ניהול</span>
+        <img
+          src="/images/logo-emblem.png"
+          alt=""
+          className={styles.brandLogo}
+        />
+        <span className={styles.brandText}>
+          פארך
+          <span className={styles.brandSubtext}>פאנל ניהול</span>
+        </span>
       </div>
 
       <Link to="/" className={styles.backToStore}>

@@ -5,18 +5,44 @@
   margin: 0;
   font-size: var(--text-sm);
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.inStock::before,
+.outOfStock::before,
+.lowStock::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
 }
 
 .inStock {
-  color: var(--color-success);
+  color: var(--color-emerald);
+}
+
+.inStock::before {
+  background: var(--color-emerald);
 }
 
 .outOfStock {
   color: var(--color-error);
 }
 
+.outOfStock::before {
+  background: var(--color-error);
+}
+
 .lowStock {
-  color: var(--color-gold);
+  color: var(--color-gold-dark);
+}
+
+.lowStock::before {
+  background: var(--color-gold);
 }
 
 .muted {

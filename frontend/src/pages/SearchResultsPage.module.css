@@ -1,21 +1,22 @@
 .page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: var(--space-6) var(--space-5) var(--space-7);
 }
 
 .header {
   display: flex;
   align-items: baseline;
-  gap: 16px;
+  gap: var(--space-4);
   flex-wrap: wrap;
-  margin-bottom: 32px;
+  margin-bottom: var(--space-6);
 }
 
 .title {
   font-family: var(--font-display);
   font-size: var(--text-2xl);
   font-weight: 700;
+  letter-spacing: var(--letter-spacing-tight);
   color: var(--color-navy);
   margin: 0;
 }
@@ -28,36 +29,38 @@
 .status {
   text-align: center;
   color: var(--color-text-secondary);
-  padding: 64px 0;
+  padding: var(--space-9) 0;
 }
 
 .error {
   text-align: center;
   color: var(--color-error);
-  padding: 64px 0;
+  padding: var(--space-9) 0;
 }
 
 .empty {
   text-align: center;
-  padding: 64px 0;
+  padding: var(--space-9) 0;
 }
 
 .empty p {
   font-size: var(--text-lg);
   color: var(--color-text-secondary);
-  margin-bottom: 24px;
+  margin-bottom: var(--space-6);
 }
 
 .shopLink {
   display: inline-block;
-  background: var(--color-navy);
+  background: var(--gradient-navy);
   color: var(--color-white);
-  padding: 10px 28px;
-  border-radius: var(--radius-md);
+  padding: 12px 32px;
+  border-radius: var(--radius-full);
   font-weight: 600;
-  transition: background var(--transition);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition), transform var(--transition);
 }
 
 .shopLink:hover {
-  background: var(--color-gold);
+  box-shadow: var(--shadow-gold-glow);
+  transform: translateY(-1px);
 }

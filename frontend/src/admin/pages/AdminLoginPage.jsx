@@ -28,8 +28,9 @@ export default function AdminLoginPage() {
   return (
     <div className={styles.page}>
       <form className={styles.card} onSubmit={handleSubmit}>
-        <div className={styles.logo}>🕍</div>
+        <img src="/images/logo-emblem.png" alt="פארך" className={styles.logo} />
         <h1 className={styles.title}>כניסת מנהל</h1>
+        <p className={styles.subtitle}>פארך · פאנל ניהול</p>
 
         {error && <p className={styles.error} role="alert">{error}</p>}
 

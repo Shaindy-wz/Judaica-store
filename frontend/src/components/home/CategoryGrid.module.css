@@ -1,5 +1,5 @@
 .section {
-  padding: 48px 24px;
+  padding: var(--space-8) 24px;
   max-width: 1280px;
   margin: 0 auto;
 }
@@ -7,32 +7,43 @@
 .items {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  gap: var(--space-5);
 }
 
 .card {
+  position: relative;
   background: var(--color-surface);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   text-align: center;
-  transition: box-shadow var(--transition), transform var(--transition);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
 }
 
 .card:hover {
-  box-shadow: var(--shadow-hover);
+  box-shadow: var(--shadow-gold-glow);
   transform: translateY(-2px);
+  border-color: var(--color-gold-light);
 }
 
 .card img {
   aspect-ratio: 1;
   object-fit: cover;
   width: 100%;
+  transition: transform var(--transition-slow);
+}
+
+.card:hover img {
+  transform: scale(1.04);
 }
 
 .name {
   display: block;
-  padding: 12px;
-  font-weight: 600;
+  padding: var(--space-3) var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 700;
   color: var(--color-navy);
 }
 
