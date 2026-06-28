@@ -1,10 +1,14 @@
 .notice {
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin: 0;
 }
 
 .notice a {
-  color: var(--color-navy);
+  color: var(--color-gold-dark);
   font-weight: 600;
   text-decoration: underline;
 }
@@ -12,17 +16,25 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-3);
+  background: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-xs);
 }
 
 .title {
+  font-family: var(--font-display);
   margin: 0;
-  font-size: var(--text-base);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-navy);
 }
 
 .starsInput {
   display: flex;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .star,
@@ -32,6 +44,12 @@
   font-size: var(--text-xl);
   color: var(--color-border);
   padding: 0;
+  transition: color var(--transition), transform var(--transition);
+}
+
+.star:hover {
+  color: var(--color-gold-light);
+  transform: scale(1.1);
 }
 
 .starActive {
@@ -41,15 +59,24 @@
 .commentLabel {
   font-size: var(--text-sm);
   font-weight: 500;
+  color: var(--color-text-primary);
 }
 
 .textarea {
   width: 100%;
-  padding: 8px 10px;
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
+  background: var(--color-white);
+  color: var(--color-text-primary);
   font-family: var(--font-body);
+  font-size: var(--text-sm);
   resize: vertical;
+  transition: border-color var(--transition);
+}
+
+.textarea:focus-visible {
+  border-color: var(--color-gold);
 }
 
 .error {
@@ -59,27 +86,31 @@
 }
 
 .success {
-  color: var(--color-success);
+  color: var(--color-emerald);
   font-size: var(--text-sm);
   margin: 0;
 }
 
 .submit {
   align-self: flex-start;
-  background: var(--color-navy);
+  background: var(--gradient-navy);
   color: var(--color-white);
   border: none;
-  border-radius: var(--radius-md);
-  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  padding: 11px 28px;
+  font-family: var(--font-body);
   font-weight: 600;
-  transition: background var(--transition);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition), transform var(--transition);
 }
 
 .submit:hover:not(:disabled) {
-  background: var(--color-navy-light);
+  box-shadow: var(--shadow-gold-glow);
+  transform: translateY(-1px);
 }
 
 .submit:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  box-shadow: none;
 }

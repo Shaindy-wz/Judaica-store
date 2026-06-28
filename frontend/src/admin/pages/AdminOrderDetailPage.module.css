@@ -1,0 +1,116 @@
+.page { max-width: 1080px; }
+.loading { padding: var(--space-6); color: var(--color-text-muted); }
+.error { color: var(--color-error); }
+
+.backRow { margin-bottom: var(--space-4); }
+.back { color: var(--color-navy); text-decoration: none; font-size: var(--text-sm); }
+.back:hover { color: var(--color-gold-dark); text-decoration: underline; }
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+}
+.title { font-family: var(--font-display); color: var(--color-navy); margin: 0; }
+
+.badge {
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+.pending  { background: var(--color-gold-light); color: var(--color-gold-dark); }
+.paid     { background: var(--color-emerald-light); color: var(--color-white); }
+.shipped  { background: var(--color-navy-light); color: var(--color-white); }
+.delivered{ background: var(--color-emerald); color: var(--color-white); }
+.cancelled{ background: var(--color-error); color: var(--color-white); }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--space-5);
+  align-items: start;
+}
+@media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+
+.sideColumn { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.card {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border: 1px solid var(--color-border-light);
+}
+
+.cardTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-navy);
+  margin: 0 0 var(--space-2);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Items table */
+.itemsTable { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.itemsTable th {
+  text-align: right;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 2px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+.itemsTable td { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-border-light); }
+.itemsTable tr:last-child td { border-bottom: none; }
+.variant { color: var(--color-text-muted); font-size: var(--text-xs); }
+
+/* Totals */
+.totals { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-4); border-top: 1px solid var(--color-border); padding-top: var(--space-3); }
+.totalRow { display: flex; justify-content: space-between; font-size: var(--text-sm); }
+.boldLabel { font-weight: 700; }
+.boldValue { font-weight: 700; font-size: var(--text-base); color: var(--color-navy); }
+.negative { color: var(--color-emerald); }
+
+/* Side panel */
+.muted { color: var(--color-text-muted); font-size: var(--text-sm); margin: 0; }
+.card p { margin: 0; font-size: var(--text-sm); }
+
+.select, .input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  direction: rtl;
+  box-sizing: border-box;
+  transition: border-color var(--transition);
+}
+.select:focus, .input:focus { outline: none; border-color: var(--color-gold); }
+.label { font-size: var(--text-xs); color: var(--color-text-secondary); font-weight: 500; }
+
+.updateBtn {
+  padding: var(--space-3) var(--space-4);
+  background: var(--gradient-navy);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  transition: box-shadow var(--transition);
+}
+.updateBtn:hover:not(:disabled) { box-shadow: var(--shadow-hover); }
+.updateBtn:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+.updateBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.saveMsg { font-size: var(--text-xs); color: var(--color-navy); }
+
+.link { color: var(--color-navy); font-size: var(--text-sm); font-weight: 600; }
+.mono { font-family: monospace; font-size: var(--text-base); letter-spacing: 1px; }

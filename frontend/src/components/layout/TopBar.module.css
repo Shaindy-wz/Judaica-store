@@ -1,12 +1,13 @@
 .topbar {
-  background: var(--color-navy);
+  background: var(--gradient-navy);
   color: var(--color-white);
-  height: 36px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
   font-size: var(--text-xs);
+  letter-spacing: var(--letter-spacing-wide);
 }
 
 .left,
@@ -18,11 +19,22 @@
 
 .left a,
 .right a {
-  color: var(--color-white);
+  color: rgba(255, 255, 255, 0.85);
+  transition: color var(--transition);
+}
+
+.left span {
+  color: var(--color-gold);
+  opacity: 0.6;
 }
 
 .left a:hover,
 .right a:hover {
+  color: var(--color-gold-light);
+}
+
+.right a {
+  font-weight: 600;
   color: var(--color-gold-light);
 }
 

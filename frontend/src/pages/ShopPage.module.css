@@ -1,17 +1,18 @@
 .page {
-  padding-bottom: 24px;
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-7);
 }
 
 .layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
+  gap: var(--space-6);
 }
 
 .main {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .toolbar {
@@ -21,10 +22,13 @@
 
 .error {
   color: var(--color-error);
+  text-align: center;
+  padding: var(--space-7) 0;
 }
 
 @media (min-width: 1024px) {
   .layout {
     grid-template-columns: 220px 1fr;
+    gap: var(--space-7);
   }
 }

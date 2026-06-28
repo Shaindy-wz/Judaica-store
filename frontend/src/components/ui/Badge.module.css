@@ -1,15 +1,17 @@
 .badge {
   display: inline-block;
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-tight);
   background: var(--color-navy);
   color: var(--color-white);
+  box-shadow: var(--shadow-xs);
 }
 
 .new {
-  background: var(--color-success);
+  background: var(--color-emerald);
 }
 
 .sale {
@@ -17,5 +19,6 @@
 }
 
 .default {
-  background: var(--color-gold);
+  background: var(--gradient-gold);
+  color: var(--color-navy-deep);
 }

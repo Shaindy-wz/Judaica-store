@@ -49,6 +49,7 @@ const ProductSchema = new Schema(
     searchTokens: [String],
 
     inStock: { type: Boolean, default: true },
+    stockQuantity: Number,
     featured: { type: Boolean, default: false },
 
     seo: {
@@ -77,8 +78,7 @@ ProductSchema.pre('save', function () {
   }
 });
 
-// findOneAndUpdate/findByIdAndUpdate (e.g. upserts in seed scripts, future admin edit
-// routes) bypass the 'save' middleware above, so searchTokens must be recomputed here too.
+// findOneAndUpdate/findByIdAndUpdate bypass 'save' middleware, so recompute searchTokens here too.
 ProductSchema.pre('findOneAndUpdate', async function () {
   const update = this.getUpdate();
   const set = update.$set ?? update;

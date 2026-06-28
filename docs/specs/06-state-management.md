@@ -67,26 +67,41 @@ export const useCart = () => useContext(CartContext);
 
 **File:** `context/AuthContext.jsx`
 
+> **Security decision (implemented):** JWT is stored in an **HTTP-Only cookie** set by the server — never in `localStorage` or accessible to JavaScript. This prevents XSS token theft. The frontend never reads the token directly; it calls `GET /api/auth/me` on mount to restore the session.
+
 ```jsx
 // context/AuthContext.jsx
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); // user.role: 'customer' | 'admin' — NEW
+  const [user, setUser] = useState(null); // { id, firstName, lastName, email, role }
   const [loading, setLoading] = useState(true);
 
-  // On mount: read token from localStorage, validate with GET /api/auth/me
-  // If token is invalid/expired → setUser(null)
+  // On mount: validate the HTTP-Only cookie via GET /api/auth/me
+  // Server reads the cookie; if valid → returns user object; if not → 401 → setUser(null)
+  useEffect(() => {
+    authService.me()
+      .then((u) => setUser(u))
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false));
+  }, []);
 
   const login = async (email, password) => {
-    // POST /api/auth/login → receive JWT → store in localStorage → setUser
+    // POST /api/auth/login → server sets HTTP-Only cookie → response returns { user }
+    const data = await authService.login(email, password);
+    setUser(data.user);
+    return data.user;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    // POST /api/auth/logout → server clears the cookie
+    await authService.logout();
     setUser(null);
-    localStorage.removeItem('token');
   };
 
-  const register = async (data) => {
-    // POST /api/auth/register → auto-login on success
+  const register = async (formData) => {
+    // POST /api/auth/register → server sets HTTP-Only cookie → auto-login
+    const data = await authService.register(formData);
+    setUser(data.user);
+    return data.user;
   };
 
   return (
@@ -100,10 +115,30 @@ export const useAuth = () => useContext(AuthContext);
 ```
 
 ### Key Rules
-- `user.role` is included in the JWT payload. The frontend uses this to show/hide admin nav links.
+- **Token is HTTP-Only cookie only.** Do not store the JWT in `localStorage`, `sessionStorage`, or any JS-accessible location.
+- `user` object is populated from `GET /api/auth/me` (which reads the cookie server-side) — not decoded from the token in JS.
+- `user.role` is used by the frontend only to show/hide UI elements (e.g., admin nav links).
 - **Never trust `user.role` for security decisions.** The backend `adminOnly` middleware is the authoritative gate for all admin operations.
-- The `loading` flag prevents the app from rendering protected routes before the token has been verified.
-- Admin login uses a different endpoint (`POST /api/auth/admin-login`) and navigates to `/admin` — it does not share the customer login form.
+- The `loading` flag prevents the app from rendering protected routes before the session has been verified.
+- All API requests send `credentials: 'include'` (set in `services/api.js`) so cookies are forwarded.
+- Admin login uses a different endpoint (`POST /api/auth/admin-login`) and does not share the customer login form.
+- `POST /api/auth/logout` clears the cookie server-side — never just `setUser(null)` alone.
+
+### Backend cookie configuration
+```js
+res.cookie('token', jwt, {
+  httpOnly: true,           // not accessible to JS
+  sameSite: 'strict',       // CSRF protection
+  secure: NODE_ENV === 'production', // HTTPS only in prod
+  maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days
+});
+```
+
+### CORS requirement
+The backend must configure CORS with `credentials: true` and an explicit `origin` (not `*`) so that cookies are accepted cross-origin during local development:
+```js
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
+```
 
 ---
 

@@ -2,9 +2,21 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
+const COOKIE_NAME = 'token';
+const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days in ms
+
 function signToken(user) {
   return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
     expiresIn: '7d',
+  });
+}
+
+function setCookie(res, token) {
+  res.cookie(COOKIE_NAME, token, {
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: COOKIE_MAX_AGE,
   });
 }
 
@@ -34,10 +46,11 @@ export async function register(req, res) {
     email,
     passwordHash,
     phone,
-    marketingConsent,
+    marketingConsent: marketingConsent === true,
   });
 
-  res.status(201).json({ token: signToken(user), user: toPublicUser(user) });
+  setCookie(res, signToken(user));
+  res.status(201).json({ user: toPublicUser(user) });
 }
 
 export async function login(req, res) {
@@ -47,11 +60,31 @@ export async function login(req, res) {
     return res.status(401).json({ message: 'Invalid email or password' });
   }
 
-  res.json({ token: signToken(user), user: toPublicUser(user) });
+  setCookie(res, signToken(user));
+  res.json({ user: toPublicUser(user) });
+}
+
+export async function logout(req, res) {
+  res.clearCookie(COOKIE_NAME, { httpOnly: true, sameSite: 'strict' });
+  res.json({ message: 'Logged out' });
 }
 
 export async function me(req, res) {
   const user = await User.findById(req.userId);
   if (!user) return res.status(404).json({ message: 'User not found' });
   res.json(toPublicUser(user));
+}
+
+export async function adminLogin(req, res) {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+    return res.status(401).json({ message: 'Invalid email or password' });
+  }
+  if (user.role !== 'admin') {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+
+  setCookie(res, signToken(user));
+  res.json({ user: toPublicUser(user) });
 }

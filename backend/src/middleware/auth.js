@@ -1,8 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 export function requireAuth(req, res, next) {
-  const header = req.headers.authorization;
-  const token = header?.startsWith('Bearer ') ? header.slice(7) : null;
+  const token = req.cookies?.token;
   if (!token) return res.status(401).json({ message: 'Authentication required' });
 
   try {
@@ -13,6 +12,18 @@ export function requireAuth(req, res, next) {
   } catch {
     res.status(401).json({ message: 'Invalid or expired token' });
   }
+}
+
+export function optionalAuth(req, res, next) {
+  const token = req.cookies?.token;
+  if (token) {
+    try {
+      const payload = jwt.verify(token, process.env.JWT_SECRET);
+      req.userId = payload.id;
+      req.userRole = payload.role;
+    } catch { /* not logged in — that's fine */ }
+  }
+  next();
 }
 
 export function adminOnly(req, res, next) {

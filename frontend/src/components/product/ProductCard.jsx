@@ -22,7 +22,9 @@ export default function ProductCard({
   return (
     <div className={styles.card}>
       {badge && <span className={styles.badge}>{badge}</span>}
-      <Link to={`/product/${slug}`}>
+      <Link to={`/product/${slug}`} className={styles.imageWrap}>
+        <span className={styles.cornerStart} aria-hidden="true" />
+        <span className={styles.cornerEnd} aria-hidden="true" />
         <img src={image} alt={name} className={styles.image} />
       </Link>
       <div className={styles.info}>
@@ -30,6 +32,8 @@ export default function ProductCard({
           <Link to={`/product/${slug}`}>{name}</Link>
         </h3>
         {rating != null && <StarRating value={rating} count={reviewCount} size="sm" />}
+      </div>
+      <div className={styles.footer}>
         <div className={styles.price}>
           {maxPrice ? (
             <span className={styles.current}>
@@ -42,20 +46,21 @@ export default function ProductCard({
             </>
           )}
         </div>
+        {hasVariants ? (
+          <Link to={`/product/${slug}`} className={`${styles.addBtn} ${styles.addBtnWide}`}>
+            בחר אפשרויות
+          </Link>
+        ) : (
+          <button
+            type="button"
+            className={styles.addBtn}
+            aria-label={`הוסף ${name} לסל`}
+            onClick={() => addToCart({ id, name, price, image, slug })}
+          >
+            +
+          </button>
+        )}
       </div>
-      {hasVariants ? (
-        <Link to={`/product/${slug}`} className={styles.addBtn}>
-          בחר אפשרויות
-        </Link>
-      ) : (
-        <button
-          type="button"
-          className={styles.addBtn}
-          onClick={() => addToCart({ id, name, price, image, slug })}
-        >
-          הוסף לסל
-        </button>
-      )}
     </div>
   );
 }

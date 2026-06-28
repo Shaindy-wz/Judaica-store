@@ -34,12 +34,12 @@ function emailLayout(content) {
   return `<!DOCTYPE html>
 <html dir="rtl" lang="he">
 <head><meta charset="utf-8" /></head>
-<body style="direction: rtl; text-align: right; font-family: Heebo, Arial, sans-serif; background: #f5f3ef; margin: 0; padding: 24px;">
-  <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-    <h2 style="color: #1a2b4a; font-family: 'Frank Ruhl Libre', serif; margin-top: 0;">${process.env.STORE_NAME || 'החנות שלנו'}</h2>
+<body style="direction: rtl; text-align: right; font-family: Heebo, Arial, sans-serif; background: #faf7f0; margin: 0; padding: 24px;">
+  <div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 24px; border-top: 3px solid #c9a227; box-shadow: 0 4px 14px rgba(13,27,53,0.08);">
+    <h2 style="color: #0d1b35; font-family: 'Frank Ruhl Libre', serif; margin-top: 0;">${process.env.STORE_NAME || 'פארך'}</h2>
     ${content}
-    <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
-    <p style="font-size: 12px; color: #888;">מייל זה נשלח אוטומטית, אין להשיב אליו.</p>
+    <hr style="border: none; border-top: 1px solid #e7e0d0; margin: 24px 0;" />
+    <p style="font-size: 12px; color: #8c867c;">מייל זה נשלח אוטומטית, אין להשיב אליו.</p>
   </div>
 </body>
 </html>`;
@@ -61,7 +61,7 @@ function renderOrderConfirmationEmail(order) {
     .join('');
 
   const invoiceLine = order.invoiceUrl
-    ? `<p><a href="${order.invoiceUrl}" style="color: #b8973a;">להורדת החשבונית לחצו כאן</a></p>`
+    ? `<p><a href="${order.invoiceUrl}" style="color: #8a6d1a;">להורדת החשבונית לחצו כאן</a></p>`
     : '';
 
   return emailLayout(`

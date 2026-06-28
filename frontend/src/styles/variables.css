@@ -1,30 +1,45 @@
-@import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Primary */
-  --color-navy:        #1a2b4a;
-  --color-navy-light:  #243660;
+  /* ===== Royal Gold Luxury palette ===== */
 
-  /* Accent */
-  --color-gold:        #b8973a;
-  --color-gold-light:  #d4b05a;
+  /* Primary — deep navy, near-black for a premium, jewel-box feel */
+  --color-navy:        #0d1b35;
+  --color-navy-light:  #1b2f56;
+  --color-navy-deep:   #060f22;
 
-  /* Background */
-  --color-bg:          #f5f3ef;
+  /* Accent — rich foil gold */
+  --color-gold:        #c9a227;
+  --color-gold-light:  #e8cf7a;
+  --color-gold-dark:   #8a6d1a;
+
+  /* Secondary accent — deep emerald, used sparingly for contrast */
+  --color-emerald:      #1f4d3d;
+  --color-emerald-light:#2f6b54;
+
+  /* Background — warm ivory instead of cold off-white */
+  --color-bg:          #faf7f0;
   --color-white:       #ffffff;
-  --color-surface:     #f0ede8;
+  --color-surface:     #f4eee0;
+  --color-surface-alt: #fff9ec;
 
-  /* Text */
-  --color-text-primary:   #1a1a1a;
-  --color-text-secondary: #555555;
-  --color-text-muted:     #888888;
+  /* Text — warm near-black instead of pure gray */
+  --color-text-primary:   #1c1a17;
+  --color-text-secondary: #5b5650;
+  --color-text-muted:     #8c867c;
 
   /* UI */
-  --color-border:      #e0ddd7;
+  --color-border:      #e7e0d0;
+  --color-border-light:#f0ebdf;
   --color-success:     #2e7d32;
-  --color-error:       #c0392b;
-  --color-whatsapp:    #25d366;
-  --color-overlay:     rgba(0, 0, 0, 0.35);
+  --color-error:        #b3261e;
+  --color-whatsapp:     #25d366;
+  --color-overlay:      rgba(6, 15, 34, 0.55);
+
+  /* Gradients */
+  --gradient-navy: linear-gradient(135deg, var(--color-navy-deep), var(--color-navy) 60%, var(--color-navy-light));
+  --gradient-gold: linear-gradient(135deg, var(--color-gold-dark), var(--color-gold) 50%, var(--color-gold-light));
+  --gradient-surface: linear-gradient(180deg, var(--color-surface-alt), var(--color-bg));
 
   /* Typography */
   --font-display: 'Frank Ruhl Libre', serif;
@@ -35,16 +50,39 @@
   --text-base: 1rem;
   --text-lg:   1.125rem;
   --text-xl:   1.25rem;
-  --text-2xl:  1.5rem;
-  --text-3xl:  1.875rem;
-  --text-4xl:  2.25rem;
-  --text-hero: 3.5rem;
+  --text-2xl:  1.625rem;
+  --text-3xl:  2rem;
+  --text-4xl:  2.5rem;
+  --text-hero: 3.75rem;
+
+  --letter-spacing-wide: 0.08em;
+  --letter-spacing-tight: -0.01em;
+
+  /* Spacing scale */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+  --space-9:  96px;
 
   /* Shape */
-  --radius-sm:  4px;
-  --radius-md:  8px;
-  --radius-lg:  12px;
-  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.14);
-  --transition:  0.2s ease;
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+  --radius-full: 999px;
+
+  /* Elevation — soft, warm-tinted shadows instead of flat black */
+  --shadow-xs:    0 1px 3px rgba(13, 27, 53, 0.06);
+  --shadow-card:  0 4px 14px rgba(13, 27, 53, 0.08);
+  --shadow-hover: 0 10px 28px rgba(13, 27, 53, 0.16);
+  --shadow-xl:    0 24px 60px rgba(6, 15, 34, 0.28);
+  --shadow-gold-glow: 0 0 0 1px rgba(201, 162, 39, 0.4), 0 8px 24px rgba(201, 162, 39, 0.25);
+
+  --transition:       0.2s ease;
+  --transition-slow:  0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }

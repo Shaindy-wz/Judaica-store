@@ -1,22 +1,88 @@
 .footer {
-  background: var(--color-navy);
+  background: var(--gradient-navy);
   color: var(--color-white);
-  margin-top: 48px;
-  padding: 48px 24px 0;
+  margin-top: 64px;
+  padding-top: 56px;
+  border-top: 3px solid transparent;
+  border-image: var(--gradient-gold) 1;
+}
+
+.brandBand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 24px var(--space-6);
+}
+
+.brand {
+  display: inline-flex;
+}
+
+.brandMark {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  box-shadow: var(--shadow-xl);
+}
+
+.brandText {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--color-gold-light);
+  margin: var(--space-3) 0 var(--space-2);
+}
+
+.brandTagline {
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.65);
+  max-width: 380px;
+  margin: 0;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px var(--space-7);
+}
+
+.divider span {
+  flex: 1;
+  max-width: 220px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.5));
+}
+
+.divider span:last-child {
+  background: linear-gradient(90deg, rgba(201, 162, 39, 0.5), transparent);
+}
+
+.divider i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  transform: rotate(45deg);
 }
 
 .columns {
   max-width: 1280px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 24px;
-  padding-bottom: 32px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  padding: 0 24px 40px;
 }
 
 .column h3 {
   font-size: var(--text-base);
-  margin-bottom: 12px;
+  font-family: var(--font-display);
+  margin-bottom: 14px;
   color: var(--color-gold-light);
 }
 
@@ -26,21 +92,32 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   font-size: var(--text-sm);
+}
+
+.column ul a {
+  color: rgba(255, 255, 255, 0.78);
+  transition: color var(--transition);
+}
+
+.column ul a:hover {
+  color: var(--color-gold-light);
 }
 
 .column p {
   font-size: var(--text-sm);
-  opacity: 0.85;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 240px;
 }
 
 .bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 16px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 20px 0;
   text-align: center;
   font-size: var(--text-xs);
-  opacity: 0.8;
+  letter-spacing: var(--letter-spacing-wide);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 @media (max-width: 1023px) {
