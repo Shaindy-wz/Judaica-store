@@ -134,8 +134,8 @@ export default function AdminOrderDetailPage() {
             {order.shipping ? (
               <>
                 <p>{order.shipping.name}</p>
-                <p>{order.shipping.street}</p>
-                <p>{order.shipping.city} {order.shipping.zip}</p>
+                <p>{order.shipping.address}</p>
+                <p>{order.shipping.city}{order.shipping.zipCode ? ` ${order.shipping.zipCode}` : ''}</p>
                 <p>{order.shipping.phone}</p>
               </>
             ) : (

@@ -23,7 +23,7 @@ export default function CartSummary({ checkoutHref = '/checkout' }) {
         <span>{formatPrice(total)}</span>
       </div>
       <Button href={checkoutHref} variant="primary">
-        לתשלום
+        להמשך לתשלום
       </Button>
     </div>
   );

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import LoginForm from '../components/account/LoginForm.jsx';
 import RegisterForm from '../components/account/RegisterForm.jsx';
@@ -27,9 +28,9 @@ export default function AccountPage() {
           <p className={styles.email}>{user.email}</p>
 
           <div className={styles.actions}>
-            <a href="/orders" className={styles.actionLink}>
+            <Link to="/orders" className={styles.actionLink}>
               ההזמנות שלי
-            </a>
+            </Link>
           </div>
 
           <button
