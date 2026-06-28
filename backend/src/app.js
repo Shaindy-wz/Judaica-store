@@ -10,6 +10,7 @@ import authRouter from './routes/auth.js';
 import couponsRouter from './routes/coupons.js';
 import adminRouter from './routes/admin.js';
 import searchRouter from './routes/search.js';
+import reviewsRouter from './routes/reviews.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -31,6 +32,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/coupons', couponsRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/search', searchRouter);
+app.use('/api/reviews', reviewsRouter);
 
 app.use(notFound);
 app.use(errorHandler);

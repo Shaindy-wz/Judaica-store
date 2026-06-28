@@ -61,7 +61,7 @@ The following questions need business decisions before the relevant parts of the
 |---|---------|---------|
 | 1 | **Store name** — what is the legal registered name? | Header logo, all meta titles, legal footer text, org schema |
 | 2 | **Payment provider** — Cardcom / PayPlus / Tranzila / Meshulam / other? | All of §11 payment implementation |
-| 3 | **Invoicing service** — Green Invoice / EZcount / iCount / other? (confirm with accountant) | §11 invoicing integration |
+| 3 | ~~**Invoicing service**~~ — **Resolved: Green Invoice.** Integration implemented in `services/greenInvoiceService.js`, triggered from `services/orderFulfillment.js` when an order is marked `paid`. VAT registration status (עוסק מורשה vs פטור) still needs confirming with the accountant — see `11-payments-and-invoicing.md` §14.4. | §11 invoicing integration |
 | 4 | **Physical branches** — does the business have branches? How many? Addresses, hours, phones? | BranchesPage, TopBar/Footer "Branches" link, BranchMap |
 | 5 | **Product images** — does the client have professional photos, or does this need to be arranged? | ImageUploader, S3/Cloudinary setup, hero image |
 | 6 | **Product catalogue** — is there an existing inventory list (Excel, CSV, another platform)? | Data migration plan, Category tree structure, time to populate DB |

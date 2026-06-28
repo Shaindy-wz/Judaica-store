@@ -60,9 +60,37 @@ const ProductSchema = new Schema(
   { timestamps: true }
 );
 
-ProductSchema.pre('save', function (next) {
-  this.searchTokens = [normalizeHebrew(this.name)];
-  next();
+// Computes normalised (niqqud/dagesh-stripped) variants of the product name + tags,
+// so search matches regardless of vowel marks.
+function computeSearchTokens(name, tags = []) {
+  const normalizedName = normalizeHebrew(name);
+  const words = normalizedName.split(/\s+/).filter(Boolean);
+  const tokens = new Set([normalizedName, ...words]);
+  for (const tag of tags || []) {
+    tokens.add(normalizeHebrew(tag));
+  }
+  return Array.from(tokens).filter(Boolean);
+}
+
+ProductSchema.pre('save', function () {
+  if (this.isModified('name') || this.isModified('tags') || this.isNew) {
+    this.searchTokens = computeSearchTokens(this.name, this.tags);
+  }
+});
+
+// findOneAndUpdate/findByIdAndUpdate bypass 'save' middleware, so recompute searchTokens here too.
+ProductSchema.pre('findOneAndUpdate', async function () {
+  const update = this.getUpdate();
+  const set = update.$set ?? update;
+  if (set.name === undefined && set.tags === undefined) return;
+
+  const existing = await this.model.findOne(this.getQuery()).select('name tags').lean();
+  const name = set.name ?? existing?.name ?? '';
+  const tags = set.tags ?? existing?.tags ?? [];
+  const tokens = computeSearchTokens(name, tags);
+
+  if (update.$set) update.$set.searchTokens = tokens;
+  else update.searchTokens = tokens;
 });
 
 ProductSchema.virtual('hasVariants').get(function () {

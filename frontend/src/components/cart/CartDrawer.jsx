@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import CartItem from './CartItem';
 import CouponInput from './CouponInput';
@@ -19,7 +20,12 @@ export default function CartDrawer() {
           </button>
         </div>
         {items.length === 0 ? (
-          <p className={styles.empty}>סל הקניות שלך ריק.</p>
+          <div className={styles.empty}>
+            <p>סל הקניות שלך ריק.</p>
+            <Link to="/shop" className={styles.continueLink} onClick={closeDrawer}>
+              המשך בקנייה
+            </Link>
+          </div>
         ) : (
           <>
             <div className={styles.items}>

@@ -6,7 +6,7 @@ import styles from './SearchResultsPage.module.css';
 
 export default function SearchResultsPage() {
   const [searchParams] = useSearchParams();
-  const q = searchParams.get('q') || '';
+  const q = searchParams.get('q') ?? '';
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

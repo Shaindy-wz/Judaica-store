@@ -5,8 +5,34 @@
   padding-bottom: 48px;
 }
 
+.error {
+  color: var(--color-error);
+}
+
 @media (min-width: 1024px) {
   .layout {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+.reviewsSection {
+  padding-bottom: 48px;
+}
+
+.reviewsLayout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+
+.reviewsAside {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .reviewsLayout {
+    grid-template-columns: 320px 1fr;
   }
 }

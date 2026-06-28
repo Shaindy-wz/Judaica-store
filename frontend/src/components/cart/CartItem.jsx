@@ -12,11 +12,19 @@ export default function CartItem({ item }) {
         <span className={styles.name}>{item.name}</span>
         <span className={styles.price}>{formatPrice(item.price)}</span>
         <div className={styles.qty}>
-          <button onClick={() => updateQuantity(item.id, item.quantity - 1, item.variantId)}>
+          <button
+            type="button"
+            aria-label="הפחת כמות"
+            onClick={() => updateQuantity(item.id, item.quantity - 1, item.variantId)}
+          >
             −
           </button>
           <span>{item.quantity}</span>
-          <button onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}>
+          <button
+            type="button"
+            aria-label="הוסף כמות"
+            onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
+          >
             +
           </button>
         </div>
