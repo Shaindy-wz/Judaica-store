@@ -16,7 +16,6 @@ import OrdersPage from './pages/OrdersPage';
 import OrderDetailPage from './pages/OrderDetailPage';
 import AccountPage from './pages/AccountPage';
 import NotFoundPage from './pages/NotFoundPage';
-import SearchResultsPage from './pages/SearchResultsPage';
 
 // Admin
 import AdminLayout from './admin/components/AdminLayout';
