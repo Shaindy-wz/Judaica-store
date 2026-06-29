@@ -12,9 +12,10 @@
 
 ```css
 :root {
-  /* Primary — Navy */
-  --color-navy:        #1a2b4a;   /* Main navy — navbar, primary buttons */
-  --color-navy-light:  #243660;   /* Hover state for navy elements */
+  /* Primary — Navy (matches the פארך logo emblem blue) */
+  --color-navy:        #113554;   /* Main navy — navbar, primary buttons */
+  --color-navy-light:  #1f6895;   /* Hover state for navy elements */
+  --color-navy-deep:   #04101f;   /* Deepest shade — hero overlays, shadows */
 
   /* Accent — Gold */
   --color-gold:        #b8973a;   /* Gold — decorations, borders, highlights */
