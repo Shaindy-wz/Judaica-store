@@ -18,6 +18,7 @@ const OrderSchema = new Schema(
     subtotal: Number,
     discount: Number,
     coupon: { type: Schema.Types.ObjectId, ref: 'Coupon' },
+    couponCode: String,
     shippingCost: Number,
     total: Number,
     status: {
@@ -28,6 +29,7 @@ const OrderSchema = new Schema(
     shipping: {
       name: String,
       phone: String,
+      email: String,
       address: String,
       city: String,
       zipCode: String,

@@ -1,6 +1,5 @@
 import Order from '../../models/Order.js';
 import Product from '../../models/Product.js';
-import Review from '../../models/Review.js';
 
 export async function getDashboard(req, res) {
   const now = new Date();
@@ -16,7 +15,6 @@ export async function getDashboard(req, res) {
     newOrdersToday,
     recentOrders,
     lowStockProducts,
-    pendingReviews,
   ] = await Promise.all([
     Order.aggregate([
       { $match: { status: { $in: ['paid', 'shipped', 'delivered'] }, createdAt: { $gte: startOfToday } } },
@@ -36,7 +34,6 @@ export async function getDashboard(req, res) {
       .limit(10)
       .populate('user', 'firstName lastName email'),
     Product.find({ inStock: true, 'variants.stockQuantity': { $lte: 5 } }).limit(10),
-    Review.countDocuments({ status: 'pending' }),
   ]);
 
   res.json({
@@ -48,6 +45,5 @@ export async function getDashboard(req, res) {
     newOrdersToday,
     recentOrders,
     lowStockProducts,
-    pendingReviews,
   });
 }

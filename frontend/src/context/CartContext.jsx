@@ -48,9 +48,9 @@ export function CartProvider({ children }) {
     );
   };
 
-  const applyCoupon = async (code) => {
+  const applyCoupon = async (code, email = null) => {
     const couponService = await import('../services/couponService');
-    const result = await couponService.default.validate(code, subtotal);
+    const result = await couponService.default.validate(code, subtotal, email);
     setCoupon(result);
     return result;
   };

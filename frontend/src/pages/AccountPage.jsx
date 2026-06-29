@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useCart } from '../context/CartContext';
 import LoginForm from '../components/account/LoginForm.jsx';
 import RegisterForm from '../components/account/RegisterForm.jsx';
 import styles from './AccountPage.module.css';
 
 export default function AccountPage() {
   const { user, logout, loading } = useAuth();
+  const { clearCart } = useCart();
   const [view, setView] = useState('login'); // 'login' | 'register'
   const [logoutLoading, setLogoutLoading] = useState(false);
 
@@ -38,6 +40,7 @@ export default function AccountPage() {
             onClick={async () => {
               setLogoutLoading(true);
               try {
+                clearCart();
                 await logout();
               } finally {
                 setLogoutLoading(false);

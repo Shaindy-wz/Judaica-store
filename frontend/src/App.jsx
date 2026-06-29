@@ -28,7 +28,6 @@ import AdminOrdersPage from './admin/pages/AdminOrdersPage';
 import AdminOrderDetailPage from './admin/pages/AdminOrderDetailPage';
 import AdminCategoriesPage from './admin/pages/AdminCategoriesPage';
 import AdminCouponsPage from './admin/pages/AdminCouponsPage';
-import AdminReviewsPage from './admin/pages/AdminReviewsPage';
 import AdminCustomersPage from './admin/pages/AdminCustomersPage';
 import AdminCustomerOrdersPage from './admin/pages/AdminCustomerOrdersPage';
 
@@ -52,7 +51,6 @@ export default function App() {
                 <Route path="/admin/orders/:id" element={<AdminOrderDetailPage />} />
                 <Route path="/admin/categories" element={<AdminCategoriesPage />} />
                 <Route path="/admin/coupons" element={<AdminCouponsPage />} />
-                <Route path="/admin/reviews" element={<AdminReviewsPage />} />
                 <Route path="/admin/customers" element={<AdminCustomersPage />} />
                 <Route path="/admin/customers/:id" element={<AdminCustomerOrdersPage />} />
               </Route>

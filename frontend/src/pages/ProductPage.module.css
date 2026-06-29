@@ -17,25 +17,3 @@
     gap: var(--space-8);
   }
 }
-
-.reviewsSection {
-  padding-bottom: var(--space-8);
-}
-
-.reviewsLayout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-7);
-}
-
-.reviewsAside {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-}
-
-@media (min-width: 1024px) {
-  .reviewsLayout {
-    grid-template-columns: 320px 1fr;
-  }
-}

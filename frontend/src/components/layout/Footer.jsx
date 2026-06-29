@@ -34,7 +34,6 @@ export default function Footer() {
           <h3>שירות לקוחות</h3>
           <ul>
             <li><Link to="/contact">צור קשר</Link></li>
-            <li><Link to="/branches">סניפים</Link></li>
           </ul>
         </div>
         <div className={styles.column}>

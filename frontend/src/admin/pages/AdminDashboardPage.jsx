@@ -36,12 +36,6 @@ export default function AdminDashboardPage() {
         <StatCard label="הכנסות השבוע" value={formatPrice(data.revenue.week)} />
         <StatCard label="הכנסות החודש" value={formatPrice(data.revenue.month)} />
         <StatCard label="הזמנות חדשות היום" value={data.newOrdersToday} />
-        <StatCard
-          label="ביקורות ממתינות"
-          value={data.pendingReviews}
-          linkTo="/admin/reviews"
-          highlight={data.pendingReviews > 0}
-        />
       </div>
 
       <h2 className={styles.sectionTitle}>הזמנות אחרונות</h2>

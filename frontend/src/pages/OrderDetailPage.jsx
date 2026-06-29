@@ -100,8 +100,18 @@ export default function OrderDetailPage() {
             </div>
             {order.discount > 0 && (
               <div className={styles.totalRow}>
-                <span>הנחה</span>
+                <span>
+                  הנחה
+                  {order.couponCode && (
+                    <span className={styles.couponBadge}>{order.couponCode}</span>
+                  )}
+                </span>
                 <span className={styles.discount}>-{formatPrice(order.discount)}</span>
+              </div>
+            )}
+            {order.discount > 0 && (
+              <div className={styles.savingsNote}>
+                🎉 חסכת {formatPrice(order.discount)} בהזמנה זו!
               </div>
             )}
             <div className={`${styles.totalRow} ${styles.grandTotal}`}>

@@ -11,6 +11,10 @@ const CouponSchema = new Schema({
   usageLimit: Number,
   usedCount: { type: Number, default: 0 },
   active: { type: Boolean, default: true },
+  couponMode: { type: String, enum: ['shared', 'per_customer', 'personal'], default: 'per_customer' },
+  forEmail: { type: String, lowercase: true, trim: true }, // personal mode only
+  onePerCustomer: { type: Boolean, default: true }, // legacy — superseded by couponMode
+  usedByEmails: { type: [String], default: [] },
 }, { timestamps: true });
 
 export default mongoose.model('Coupon', CouponSchema);

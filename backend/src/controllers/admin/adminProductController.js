@@ -117,6 +117,20 @@ export async function updateProduct(req, res) {
     }
   }
 
+  // Always derive inStock from stockQuantity so the admin never has to tick the
+  // checkbox manually. The form sends inStock from the current DB value (false when
+  // sold out), so checking `=== undefined` never fired — we override unconditionally.
+  if (Array.isArray(data.variants) && data.variants.length > 0) {
+    data.variants = data.variants.map((v) =>
+      v.stockQuantity != null ? { ...v, inStock: v.stockQuantity > 0 } : v
+    );
+    // Product is in stock if at least one variant has stock
+    data.inStock = data.variants.some((v) => v.inStock !== false);
+  } else if (data.stockQuantity != null) {
+    // Simple product (no variants) — derive directly from quantity
+    data.inStock = data.stockQuantity > 0;
+  }
+
   const product = await Product.findByIdAndUpdate(id, data, {
     new: true,
     runValidators: true,

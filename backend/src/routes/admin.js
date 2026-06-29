@@ -29,12 +29,8 @@ import {
   createCoupon,
   updateCoupon,
   deleteCoupon,
+  generateCode,
 } from '../controllers/admin/adminCouponController.js';
-import {
-  listReviews,
-  approveReview,
-  rejectReview,
-} from '../controllers/admin/adminReviewController.js';
 import {
   listCustomers,
   getCustomerOrders,
@@ -76,15 +72,11 @@ router.put('/categories/:id', updateCategory);
 router.delete('/categories/:id', deleteCategory);
 
 // Coupons
+router.get('/coupons/generate-code', generateCode);
 router.get('/coupons', listCoupons);
 router.post('/coupons', createCoupon);
 router.put('/coupons/:id', updateCoupon);
 router.delete('/coupons/:id', deleteCoupon);
-
-// Reviews
-router.get('/reviews', listReviews);
-router.put('/reviews/:id/approve', approveReview);
-router.put('/reviews/:id/reject', rejectReview);
 
 // Customers
 router.get('/customers', listCustomers);

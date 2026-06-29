@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
-import StarRating from '../ui/StarRating';
 import { formatPrice } from '../../utils/formatPrice';
 import styles from './ProductCard.module.css';
 
@@ -13,8 +12,6 @@ export default function ProductCard({
   hasVariants,
   image,
   badge,
-  rating,
-  reviewCount,
   slug,
 }) {
   const { addToCart } = useCart();
@@ -31,7 +28,6 @@ export default function ProductCard({
         <h3 className={styles.name}>
           <Link to={`/product/${slug}`}>{name}</Link>
         </h3>
-        {rating != null && <StarRating value={rating} count={reviewCount} size="sm" />}
       </div>
       <div className={styles.footer}>
         <div className={styles.price}>

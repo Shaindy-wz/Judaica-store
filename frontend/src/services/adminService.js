@@ -48,17 +48,10 @@ export const deleteCategory = (id) => api.delete(`/admin/categories/${id}`);
 
 // Coupons
 export const getAdminCoupons = () => api.get('/admin/coupons');
+export const generateCouponCode = () => api.get('/admin/coupons/generate-code');
 export const createCoupon = (data) => api.post('/admin/coupons', data);
 export const updateCoupon = (id, data) => api.put(`/admin/coupons/${id}`, data);
 export const deleteCoupon = (id) => api.delete(`/admin/coupons/${id}`);
-
-// Reviews
-export const getAdminReviews = (params = {}) => {
-  const qs = new URLSearchParams(params).toString();
-  return api.get(`/admin/reviews${qs ? `?${qs}` : ''}`);
-};
-export const approveReview = (id) => api.put(`/admin/reviews/${id}/approve`, {});
-export const rejectReview = (id) => api.put(`/admin/reviews/${id}/reject`, {});
 
 // Customers
 export const getAdminCustomers = (params = {}) => {

@@ -24,8 +24,6 @@ export default function ProductGrid({ products }) {
           originalPrice={product.originalPrice}
           hasVariants={product.hasVariants}
           badge={product.badge}
-          rating={product.ratingAverage}
-          reviewCount={product.ratingCount}
         />
       ))}
     </div>

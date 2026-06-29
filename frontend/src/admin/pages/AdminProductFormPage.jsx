@@ -272,7 +272,14 @@ export default function AdminProductFormPage() {
                 <input
                   type="number" min="0"
                   value={form.stockQuantity}
-                  onChange={(e) => set('stockQuantity', e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setForm((prev) => ({
+                      ...prev,
+                      stockQuantity: val,
+                      inStock: val !== '' ? Number(val) > 0 : prev.inStock,
+                    }));
+                  }}
                   placeholder="למשל: 50"
                 />
               </Field>
@@ -409,10 +416,19 @@ export default function AdminProductFormPage() {
         {/* Toggles */}
         <section className={styles.section}>
           <div className={styles.toggleRow}>
-            <label>
-              <input type="checkbox" checked={form.inStock}
-                onChange={(e) => set('inStock', e.target.checked)} />
+            <label title={form.stockQuantity !== '' ? 'מחושב אוטומטית לפי כמות במלאי' : ''}>
+              <input
+                type="checkbox"
+                checked={form.inStock}
+                disabled={form.stockQuantity !== ''}
+                onChange={(e) => set('inStock', e.target.checked)}
+              />
               {' '}במלאי
+              {form.stockQuantity !== '' && (
+                <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginRight: '6px' }}>
+                  (אוטומטי לפי כמות)
+                </span>
+              )}
             </label>
             <label>
               <input type="checkbox" checked={form.featured}

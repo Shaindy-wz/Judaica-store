@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import styles from './CouponInput.module.css';
 
 export default function CouponInput() {
   const { coupon, applyCoupon, removeCoupon } = useCart();
+  const { user } = useAuth();
   const [code, setCode] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -14,7 +16,7 @@ export default function CouponInput() {
     setLoading(true);
     setError(null);
     try {
-      await applyCoupon(code.trim());
+      await applyCoupon(code.trim(), user?.email ?? null);
       setCode('');
     } catch (err) {
       setError(err.message);

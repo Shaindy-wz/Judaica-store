@@ -3,9 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import orderService from '../services/orderService';
 import { formatPrice } from '../utils/formatPrice';
+import CouponInput from '../components/cart/CouponInput';
 import styles from './CheckoutPage.module.css';
 
-const EMPTY_ADDRESS = { name: '', phone: '', address: '', city: '', zipCode: '' };
+const EMPTY_ADDRESS = { name: '', email: '', phone: '', address: '', city: '', zipCode: '' };
 
 export default function CheckoutPage() {
   const { items, coupon, subtotal, discount, total, clearCart } = useCart();
@@ -95,6 +96,16 @@ export default function CheckoutPage() {
           </div>
 
           <div className={styles.field}>
+            <label htmlFor="email">אימייל *</label>
+            <input
+              id="email" type="email" required
+              value={addr.email} onChange={(e) => setField('email', e.target.value)}
+              placeholder="israel@example.com"
+              dir="ltr"
+            />
+          </div>
+
+          <div className={styles.field}>
             <label htmlFor="phone">טלפון *</label>
             <input
               id="phone" type="tel" required
@@ -156,6 +167,8 @@ export default function CheckoutPage() {
               </li>
             ))}
           </ul>
+
+          <CouponInput />
 
           <div className={styles.totals}>
             <div className={styles.totalRow}>

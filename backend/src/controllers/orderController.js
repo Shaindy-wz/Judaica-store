@@ -1,7 +1,8 @@
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import Coupon from '../models/Coupon.js';
-import { validateCouponForTotal, calculateDiscount, reserveCouponUsage, releaseCouponUsage } from '../utils/couponValidation.js';
+import User from '../models/User.js';
+import { validateCouponForTotal, calculateDiscount, reserveCouponUsage } from '../utils/couponValidation.js';
 
 async function resolveLineItem({ productId, variantId, quantity }) {
   const product = await Product.findById(productId);
@@ -100,8 +101,8 @@ async function checkStock(items) {
   return errors;
 }
 
-// Fetches real prices from DB, applies coupon. Returns verified totals + mutates item.price.
-async function recomputeTotals(items, couponCode) {
+// Fetches real prices from DB, validates coupon server-side. Returns verified totals.
+async function recomputeTotals(items, couponCode, emails = []) {
   let subtotal = 0;
   for (const item of items) {
     const prod = await Product.findById(item.product).select('basePrice variants');
@@ -116,18 +117,12 @@ async function recomputeTotals(items, couponCode) {
   let discount = 0;
   let couponId;
   if (couponCode) {
-    const coupon = await Coupon.findOne({ code: couponCode.toUpperCase(), active: true });
-    if (
-      coupon &&
-      (!coupon.expiresAt || coupon.expiresAt > new Date()) &&
-      (!coupon.usageLimit || coupon.usedCount < coupon.usageLimit) &&
-      (!coupon.minOrderAmount || subtotal >= coupon.minOrderAmount)
-    ) {
-      discount = coupon.type === 'percentage'
-        ? subtotal * (coupon.value / 100)
-        : Math.min(coupon.value, subtotal);
+    const { coupon, error } = await validateCouponForTotal(couponCode, subtotal, emails);
+    if (coupon) {
+      discount = calculateDiscount(subtotal, coupon);
       couponId = coupon._id;
     }
+    void error;
   }
 
   return { subtotal, discount, total: subtotal - discount, couponId };
@@ -164,11 +159,13 @@ async function decrementStock(items) {
 
 export async function mockPay(req, res) {
   const { items, shippingAddress, couponCode } = req.body;
+  const email = shippingAddress?.email?.toLowerCase().trim() || null;
 
   if (!items?.length) return res.status(400).json({ message: 'Order must contain items' });
   if (!shippingAddress?.name || !shippingAddress?.phone || !shippingAddress?.address || !shippingAddress?.city) {
     return res.status(400).json({ message: 'פרטי משלוח חסרים' });
   }
+  if (!email) return res.status(400).json({ message: 'כתובת אימייל חסרה' });
 
   // 1. Validate stock
   const stockErrors = await checkStock(items);
@@ -176,8 +173,16 @@ export async function mockPay(req, res) {
     return res.status(409).json({ message: 'מוצרים חסרים במלאי', outOfStock: stockErrors });
   }
 
-  // 2. Recompute totals from DB (never trust frontend numbers)
-  const { subtotal, discount, total, couponId } = await recomputeTotals(items, couponCode);
+  // 2. Collect all emails for this user (shipping + account) for coupon validation
+  const emails = [email];
+  if (req.userId) {
+    const accountUser = await User.findById(req.userId).select('email');
+    if (accountUser?.email) emails.push(accountUser.email.toLowerCase().trim());
+  }
+  const uniqueEmails = [...new Set(emails.filter(Boolean))];
+
+  // 3. Recompute totals from DB + validate coupon against all known emails
+  const { subtotal, discount, total, couponId } = await recomputeTotals(items, couponCode, uniqueEmails);
 
   // 3. Create order
   const order = await Order.create({
@@ -187,10 +192,12 @@ export async function mockPay(req, res) {
     discount,
     total,
     coupon: couponId,
+    couponCode: couponCode?.toUpperCase() || undefined,
     status: 'paid',
     shipping: {
       name: shippingAddress.name,
       phone: shippingAddress.phone,
+      email,
       address: shippingAddress.address,
       city: shippingAddress.city,
       zipCode: shippingAddress.zipCode ?? '',
@@ -203,7 +210,7 @@ export async function mockPay(req, res) {
   // 4. Background tasks — never block the response
   decrementStock(items).catch((err) => console.error('Stock decrement error:', err));
   if (couponId) {
-    Coupon.findByIdAndUpdate(couponId, { $inc: { usedCount: 1 } }).catch(() => {});
+    reserveCouponUsage(couponId, email).catch(() => {});
   }
 }
 

@@ -1,5 +1,6 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import styles from './AdminSidebar.module.css';
 
 const links = [
@@ -8,15 +9,16 @@ const links = [
   { to: '/admin/orders', label: 'הזמנות', icon: '🛒' },
   { to: '/admin/categories', label: 'קטגוריות', icon: '🗂️' },
   { to: '/admin/coupons', label: 'קופונים', icon: '🏷️' },
-  { to: '/admin/reviews', label: 'ביקורות', icon: '⭐' },
   { to: '/admin/customers', label: 'לקוחות', icon: '👥' },
 ];
 
 export default function AdminSidebar() {
   const { logout } = useAuth();
+  const { clearCart } = useCart();
   const navigate = useNavigate();
 
   function handleLogout() {
+    clearCart();
     logout();
     navigate('/admin/login');
   }

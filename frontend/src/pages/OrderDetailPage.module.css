@@ -205,6 +205,31 @@
   color: var(--color-emerald);
 }
 
+.couponBadge {
+  display: inline-block;
+  margin-inline-start: 8px;
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(184, 151, 58, 0.12);
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold-dark);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+}
+
+.savingsNote {
+  text-align: center;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-gold-dark);
+  background: rgba(184, 151, 58, 0.08);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  margin-top: 4px;
+}
+
 .grandTotal {
   font-family: var(--font-display);
   font-size: var(--text-lg);
