@@ -3,11 +3,7 @@
   z-index: 10;
   display: flex;
   justify-content: center;
-  margin: 0 -24px;
   padding: 0 24px;
-  background: var(--gradient-navy);
-  border-top: 1px solid rgba(201, 162, 39, 0.35);
-  box-shadow: var(--shadow-card);
 }
 
 .list {

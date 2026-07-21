@@ -1,5 +1,5 @@
 .topbar {
-  background: var(--gradient-navy);
+  background: transparent;
   color: var(--color-white);
   height: 38px;
   display: flex;

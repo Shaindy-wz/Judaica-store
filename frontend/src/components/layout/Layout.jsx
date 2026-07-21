@@ -1,6 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import TopBar from './TopBar';
 import Header from './Header';
 import Footer from './Footer';
 import WhatsAppButton from '../ui/WhatsAppButton';
@@ -16,7 +15,6 @@ export default function Layout() {
 
   return (
     <>
-      <TopBar />
       <Header />
       <main>
         <Outlet />

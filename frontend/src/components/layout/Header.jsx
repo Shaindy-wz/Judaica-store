@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import TopBar from './TopBar';
 import Navbar from './Navbar';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
@@ -12,6 +13,8 @@ export default function Header() {
 
   return (
     <header className={styles.header}>
+      <TopBar />
+
       <div className={styles.row}>
         <div className={styles.sideGroup}>
           <button

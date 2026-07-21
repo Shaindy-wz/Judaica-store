@@ -2,9 +2,9 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: var(--color-white);
-  box-shadow: var(--shadow-xs);
-  padding: 0 24px;
+  background: var(--gradient-navy);
+  border-bottom: 1px solid rgba(201, 162, 39, 0.35);
+  box-shadow: var(--shadow-xl);
 }
 
 .row {
@@ -13,6 +13,8 @@
   align-items: center;
   gap: 24px;
   height: 108px;
+  padding: 0 24px;
+  border-top: 1px solid rgba(201, 162, 39, 0.2);
 }
 
 .logo {
@@ -46,7 +48,9 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  box-shadow: var(--shadow-card);
+  background: var(--color-surface-alt);
+  padding: 3px;
+  box-shadow: 0 0 0 2px var(--color-gold), var(--shadow-hover);
   margin-bottom: 2px;
 }
 
@@ -54,7 +58,7 @@
   font-family: var(--font-display);
   font-size: var(--text-2xl);
   font-weight: 700;
-  color: var(--color-navy);
+  color: var(--color-white);
   letter-spacing: var(--letter-spacing-tight);
   line-height: 1;
 }
@@ -85,13 +89,13 @@
 .cartLink {
   position: relative;
   font-size: var(--text-lg);
-  color: var(--color-navy);
+  color: var(--color-white);
   transition: color var(--transition), transform var(--transition);
 }
 
 .iconLink:hover,
 .cartLink:hover {
-  color: var(--color-gold-dark);
+  color: var(--color-gold-light);
   transform: translateY(-1px);
 }
 
@@ -103,9 +107,9 @@
 
 .adminLink {
   font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--color-white);
-  background: var(--gradient-navy);
+  font-weight: 700;
+  color: var(--color-navy-deep);
+  background: var(--gradient-gold);
   padding: 6px 16px;
   border-radius: var(--radius-full);
   white-space: nowrap;
