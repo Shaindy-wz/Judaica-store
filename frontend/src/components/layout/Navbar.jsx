@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import categoryService from '../../services/categoryService';
 import styles from './Navbar.module.css';
 
 export default function Navbar() {
-  const { user } = useAuth();
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -42,19 +40,6 @@ export default function Navbar() {
             )}
           </li>
         ))}
-
-        {user?.role === 'admin' && (
-          <li className={styles.adminItem}>
-            <NavLink
-              to="/admin"
-              className={({ isActive }) =>
-                `${styles.adminNavLink} ${isActive ? styles.adminNavLinkActive : ''}`
-              }
-            >
-              🛠 ניהול
-            </NavLink>
-          </li>
-        )}
       </ul>
     </nav>
   );

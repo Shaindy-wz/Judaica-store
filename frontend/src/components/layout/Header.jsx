@@ -16,7 +16,21 @@ export default function Header() {
       <TopBar />
 
       <div className={styles.row}>
-        <div className={styles.sideGroup}>
+        <Link to="/" className={styles.logo}>
+          <img
+            src="/images/logo-emblem.png"
+            alt="פארך — תשמישי קדושה"
+            className={styles.logoMark}
+          />
+          <span className={styles.logoNames}>
+            <span className={styles.logoText}>פארך</span>
+            <span className={styles.logoTagline}>תשמישי קדושה</span>
+          </span>
+        </Link>
+
+        <Navbar />
+
+        <div className={styles.iconGroup}>
           <button
             type="button"
             aria-label="חיפוש מוצרים"
@@ -28,19 +42,6 @@ export default function Header() {
           <Link to="/account" aria-label="החשבון שלי" className={styles.iconLink}>
             👤
           </Link>
-        </div>
-
-        <Link to="/" className={styles.logo}>
-          <img
-            src="/images/logo-emblem.png"
-            alt="פארך — תשמישי קדושה"
-            className={styles.logoMark}
-          />
-          <span className={styles.logoText}>פארך</span>
-          <span className={styles.logoTagline}>תשמישי קדושה</span>
-        </Link>
-
-        <div className={styles.sideGroup}>
           {user?.role === 'admin' && (
             <Link to="/admin" className={styles.adminLink} aria-label="פאנל ניהול">
               ניהול
@@ -57,7 +58,6 @@ export default function Header() {
           </button>
         </div>
       </div>
-      <Navbar />
     </header>
   );
 }
