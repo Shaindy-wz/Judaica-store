@@ -10,7 +10,8 @@
 .row {
   display: flex;
   align-items: center;
-  gap: 20px;
+  justify-content: center;
+  gap: 32px;
   height: 60px;
   padding: 0 24px;
   border-top: 1px solid rgba(201, 162, 39, 0.2);
