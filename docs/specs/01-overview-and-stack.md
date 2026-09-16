@@ -91,18 +91,52 @@ production.
 |---|---|
 | Build command | `npm run build` (installs both workspaces, then `vite build`) |
 | Start command | `npm start` (runs `backend/src/server.js`) |
-| Health check | `/api/products` |
+| Health check | `/api/health` — see §Startup and health below |
 | Blueprint | `render.yaml` at the repo root |
 
 ### How requests are routed
 
 `backend/src/app.js` resolves each request in this order:
 
-1. `/uploads/*` — admin-uploaded files on disk
-2. `/api/*` — the routers; anything unmatched returns a **JSON** 404
-3. static files from `frontend/dist`
-4. any remaining `GET` — returns `index.html` so React Router can resolve the
+1. `/api/health` — mounted first, touches no database
+2. `/uploads/*` — admin-uploaded files on disk
+3. `/api/*` — the routers; anything unmatched returns a **JSON** 404
+4. static files from `frontend/dist` — hashed files under `/assets` are served
+   with `Cache-Control: immutable` for a year; `index.html` is always `no-cache`
+5. any remaining `GET` — returns `index.html` so React Router can resolve the
    path client-side (this is what keeps a deep link working on refresh)
+
+### Startup and health
+
+`server.js` opens the HTTP listener **first** and connects to MongoDB behind
+it, retrying every 10s. An unreachable database therefore degrades the site
+instead of killing it. Previously the process exited on a failed connect,
+Render restarted it in a loop, the service never went live, and every request
+hung until the browser gave up — which presents as "the site is unbearably
+slow" rather than as the outage it actually is.
+
+`GET /api/health` runs no query, so it answers during a cold start and during a
+database outage, reporting `db` as `connected` / `connecting` / `disconnected`.
+Data routes fail in ~5s with a readable JSON error (Mongoose `bufferTimeoutMS`)
+instead of hanging.
+
+### Cold starts on the free plan
+
+Render's free plan stops the service after 15 minutes without traffic, and the
+next visitor waits ~50s for it to boot. Either move to a paid instance, or ping
+`/api/health` every ~10 minutes from an external uptime checker — the endpoint
+is cheap by design.
+
+### Creating or resetting the admin user
+
+```bash
+MONGODB_URI="<atlas-uri>" ADMIN_EMAIL="you@example.com" ADMIN_PASSWORD="<strong>" npm run create:admin
+```
+
+The script creates the user, or promotes an existing one to `role: 'admin'` and
+resets its password. Sign in at `/admin/login`. Both variables fall back to
+development defaults (`admin@judaica-store.com` / `Admin1234!`) — never leave
+those on a live store.
 
 ### Environment variables
 

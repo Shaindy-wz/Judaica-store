@@ -6,6 +6,24 @@
 
 ---
 
+## Health (NEW)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/health` | Liveness probe. **Public and unauthenticated.** |
+
+Returns `{ status, uptime, db }`, where `db` is `connected` / `connecting` /
+`disconnected` / `disconnecting`.
+
+It deliberately issues **no database query** and is mounted before every other
+router, so it still answers while MongoDB is unreachable. This is what the host
+uses as its health check: aiming that check at a data route meant a database
+outage kept the service from ever going live, and requests hung instead of
+erroring. It exposes no store data, so it is also safe as the target of an
+external uptime ping that keeps a free-plan instance warm.
+
+---
+
 ## Products
 
 | Method | Path | Description |

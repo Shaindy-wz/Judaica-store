@@ -158,6 +158,7 @@
 └── backend/
     └── src/
         ├── routes/
+        │   ├── health.js                      ← NEW (DB-free liveness probe)
         │   ├── products.js
         │   ├── categories.js
         │   ├── orders.js
