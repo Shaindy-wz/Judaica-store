@@ -1,5 +1,6 @@
 import { useCart } from '../../context/CartContext';
 import { formatPrice } from '../../utils/formatPrice';
+import { productImageSrc, handleImageError } from '../../utils/productImage';
 import styles from './CartItem.module.css';
 
 export default function CartItem({ item }) {
@@ -7,7 +8,12 @@ export default function CartItem({ item }) {
 
   return (
     <div className={styles.item}>
-      <img src={item.image} alt={item.name} className={styles.image} />
+      <img
+        src={productImageSrc(item.image)}
+        alt={item.name}
+        className={styles.image}
+        onError={handleImageError}
+      />
       <div className={styles.info}>
         <span className={styles.name}>{item.name}</span>
         <span className={styles.price}>{formatPrice(item.price)}</span>

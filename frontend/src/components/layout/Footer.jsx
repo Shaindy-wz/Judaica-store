@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import business, { fullAddress, whatsappUrl } from '../../config/business';
 import styles from './Footer.module.css';
 
 export default function Footer() {
@@ -12,7 +13,7 @@ export default function Footer() {
             className={styles.brandMark}
           />
         </Link>
-        <h2 className={styles.brandText}>פארך</h2>
+        <h2 className={styles.brandText}>{business.name}</h2>
         <p className={styles.brandTagline}>תשמישי קדושה מסורתיים ואיכותיים — ייצור והפצה</p>
       </div>
 
@@ -28,31 +29,56 @@ export default function Footer() {
             <li><Link to="/category/prayer-shawls">טליתות</Link></li>
             <li><Link to="/category/tefillin">תפילין</Link></li>
             <li><Link to="/category/mezuzot">מזוזות</Link></li>
+            <li><Link to="/shop">כל המוצרים</Link></li>
           </ul>
         </div>
         <div className={styles.column}>
           <h3>שירות לקוחות</h3>
           <ul>
             <li><Link to="/contact">צור קשר</Link></li>
+            <li><Link to="/faq">שאלות נפוצות</Link></li>
+            <li><Link to="/shipping-returns">משלוחים והחזרות</Link></li>
+            <li><Link to="/orders">מעקב הזמנות</Link></li>
+          </ul>
+        </div>
+        <div className={styles.column}>
+          <h3>אודות</h3>
+          <ul>
+            <li><Link to="/about">הסיפור שלנו</Link></li>
+            <li><Link to="/accessibility-statement">נגישות</Link></li>
+            <li><Link to="/terms">תקנון</Link></li>
+            <li><Link to="/privacy-policy">מדיניות פרטיות</Link></li>
           </ul>
         </div>
         <div className={styles.column}>
           <h3>פרטי קשר</h3>
           <ul>
-            <li><a href="tel:1800707707">1-800-707-707</a></li>
-          </ul>
-        </div>
-        <div className={styles.column}>
-          <h3>משפטי</h3>
-          <ul>
-            <li><Link to="/terms">תקנון</Link></li>
-            <li><Link to="/privacy-policy">מדיניות פרטיות</Link></li>
-            <li><Link to="/accessibility-statement">הצהרת נגישות</Link></li>
+            <li>
+              <a href={`tel:${business.phoneDial}`} dir="ltr">{business.phone}</a>
+            </li>
+            <li>
+              <a href={`mailto:${business.email}`} dir="ltr">{business.email}</a>
+            </li>
+            {whatsappUrl && (
+              <li>
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">וואטסאפ</a>
+              </li>
+            )}
+            <li className={styles.plain}>{fullAddress}</li>
+            <li className={styles.plain}>{business.hours[0].days}: {business.hours[0].time}</li>
           </ul>
         </div>
       </div>
+
       <div className={styles.bottom}>
-        <p>© {new Date().getFullYear()} פארך. כל הזכויות שמורות</p>
+        {/* Legal business identity — required by the Consumer Protection Law */}
+        <p className={styles.legal}>
+          {business.legalName}
+          {business.businessId && ` · ח.פ./ע.מ. ${business.businessId}`}
+          {' · '}
+          {fullAddress}
+        </p>
+        <p>© {new Date().getFullYear()} {business.name}. כל הזכויות שמורות</p>
       </div>
     </footer>
   );

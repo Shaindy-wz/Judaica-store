@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8f2e4"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.55"/>
+    </linearGradient>
+    <radialGradient id="vignette" cx="50%" cy="45%" r="65%">
+      <stop offset="60%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#04101f" stop-opacity="0.07"/>
+    </radialGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#b8933a" stop-opacity="0.55"/>
+      <stop offset="50%" stop-color="#b8933a"/>
+      <stop offset="100%" stop-color="#b8933a" stop-opacity="0.55"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#bgGrad)"/>
+  <rect width="800" height="800" fill="url(#vignette)"/>
+  <path d="M 48 94 L 48 48 L 94 48" fill="none" stroke="#b8933a" stroke-width="3" stroke-linecap="square" opacity="0.55"/>
+  <path d="M 752 94 L 752 48 L 706 48" fill="none" stroke="#b8933a" stroke-width="3" stroke-linecap="square" opacity="0.55"/>
+  <path d="M 48 706 L 48 752 L 94 752" fill="none" stroke="#b8933a" stroke-width="3" stroke-linecap="square" opacity="0.55"/>
+  <path d="M 752 706 L 752 752 L 706 752" fill="none" stroke="#b8933a" stroke-width="3" stroke-linecap="square" opacity="0.55"/>
+  <ellipse cx="400" cy="690" rx="210" ry="26" fill="#04101f" opacity="0.08"/>
+  
+    <g>
+      <path d="M 176 268 h 448 v 296 q -224 44 -448 0 Z" fill="#eadfc6" stroke="#c9b48c" stroke-width="3"/>
+      <rect x="212" y="304" width="376" height="228" rx="6" fill="none" stroke="url(#metal)" stroke-width="4"/>
+      <rect x="230" y="322" width="340" height="192" rx="4" fill="none" stroke="#b8933a" stroke-width="1.5" opacity="0.6"/>
+      <g opacity="0.9">
+        <path d="M 286 470 v -70 h 30 v 70 M 336 470 v -96 h 34 v 96 M 390 470 v -60 h 26 v 60 M 436 470 v -108 h 38 v 108 M 494 470 v -74 h 28 v 74" fill="url(#metal)"/>
+        <path d="M 270 470 h 268" stroke="#b8933a" stroke-width="5"/>
+        <path d="M 350 374 l 17 -26 l 17 26 Z M 447 362 l 19 -30 l 19 30 Z" fill="url(#metal)"/>
+      </g>
+      <path d="M 188 564 v 34" stroke="#b8933a" stroke-width="3" opacity="0.65" stroke-linecap="round"/><path d="M 240 564 v 34" stroke="#b8933a" stroke-width="3" opacity="0.65" stroke-linecap="round"/><path d="M 292 564 v 34" stroke="#b8933a" stroke-width="3" opacity="0.65" stroke-linecap="round"/><path d="M 344 564 v 34" stroke="#b8933a" stroke-width="3" opacity="0.65" stroke-linecap="round"/><path d="M 396 564 v 34" stroke="#b8933a" stroke-width="3" opacity="0.65" stroke-linecap="round"/><path d="M 448 564 v 34" stroke="#b8933a" stroke-width="3" opacity="0.65" stroke-linecap="round"/><path d="M 500 564 v 34" stroke="#b8933a" stroke-width="3" opacity="0.65" stroke-linecap="round"/><path d="M 552 564 v 34" stroke="#b8933a" stroke-width="3" opacity="0.65" stroke-linecap="round"/><path d="M 604 564 v 34" stroke="#b8933a" stroke-width="3" opacity="0.65" stroke-linecap="round"/>
+    </g>
+</svg>

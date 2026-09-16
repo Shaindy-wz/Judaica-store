@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSearch } from '../../context/SearchContext';
 import { formatPrice } from '../../utils/formatPrice';
+import { productImageSrc, handleImageError } from '../../utils/productImage';
 import styles from './SearchBar.module.css';
 
 export default function SearchBar() {
@@ -61,7 +62,12 @@ export default function SearchBar() {
                   aria-selected="false"
                   onMouseDown={() => setFocused(false)}
                 >
-                  <img src={product.images?.[0]} alt="" className={styles.resultImage} />
+                  <img
+                    src={productImageSrc(product.images?.[0])}
+                    alt=""
+                    className={styles.resultImage}
+                    onError={handleImageError}
+                  />
                   <div className={styles.resultInfo}>
                     <span className={styles.resultName}>{product.name}</span>
                     <span className={styles.resultPrice}>

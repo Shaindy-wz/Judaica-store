@@ -14,7 +14,7 @@
 .right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 18px;
 }
 
 .left a,
@@ -23,9 +23,8 @@
   transition: color var(--transition);
 }
 
-.left span {
-  color: var(--color-gold);
-  opacity: 0.6;
+.note {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .left a:hover,
@@ -36,6 +35,12 @@
 .right a {
   font-weight: 600;
   color: var(--color-gold-light);
+}
+
+@media (max-width: 1023px) {
+  .note {
+    display: none;
+  }
 }
 
 @media (max-width: 767px) {

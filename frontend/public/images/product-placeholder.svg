@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <defs>
+    <linearGradient id="ph-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8f4ea"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#ph-bg)"/>
+  <path d="M 48 94 L 48 48 L 94 48" fill="none" stroke="#c9a227" stroke-width="3" opacity="0.5"/>
+  <path d="M 752 94 L 752 48 L 706 48" fill="none" stroke="#c9a227" stroke-width="3" opacity="0.5"/>
+  <path d="M 48 706 L 48 752 L 94 752" fill="none" stroke="#c9a227" stroke-width="3" opacity="0.5"/>
+  <path d="M 752 706 L 752 752 L 706 752" fill="none" stroke="#c9a227" stroke-width="3" opacity="0.5"/>
+  <g opacity="0.5">
+    <circle cx="400" cy="360" r="118" fill="none" stroke="#113554" stroke-width="4"/>
+    <circle cx="400" cy="360" r="96" fill="none" stroke="#c9a227" stroke-width="2"/>
+    <path d="M 400 292 l 60 104 h -120 Z" fill="none" stroke="#113554" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M 400 428 l -60 -104 h 120 Z" fill="none" stroke="#113554" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+  <text x="400" y="546" font-family="'Frank Ruhl Libre', serif" font-size="34" fill="#113554" opacity="0.55" text-anchor="middle">תמונה בקרוב</text>
+</svg>

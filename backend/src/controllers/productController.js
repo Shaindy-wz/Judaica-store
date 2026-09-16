@@ -14,7 +14,9 @@ export async function list(req, res) {
   if (category) {
     const categoryDoc = await Category.findOne({ slug: category });
     if (!categoryDoc) return res.json({ items: [], total: 0, page: Number(page), pages: 0 });
-    filter.category = categoryDoc._id;
+    // A parent category also lists everything filed under its sub-categories.
+    const children = await Category.find({ parent: categoryDoc._id }).select('_id');
+    filter.category = { $in: [categoryDoc._id, ...children.map((c) => c._id)] };
   }
   if (tag) filter.tags = tag;
   if (minPrice || maxPrice) {

@@ -111,13 +111,30 @@
   max-width: 240px;
 }
 
+.plain {
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.6;
+}
+
 .bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 20px 0;
+  padding: 20px 24px;
   text-align: center;
   font-size: var(--text-xs);
   letter-spacing: var(--letter-spacing-wide);
   color: rgba(255, 255, 255, 0.6);
+}
+
+.bottom p {
+  margin: 0 0 6px;
+}
+
+.bottom p:last-child {
+  margin-bottom: 0;
+}
+
+.legal {
+  color: rgba(255, 255, 255, 0.72);
 }
 
 @media (max-width: 1023px) {

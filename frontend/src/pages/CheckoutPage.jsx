@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import orderService from '../services/orderService';
+import CancellationRightsNotice from '../components/checkout/CancellationRightsNotice';
 import { formatPrice } from '../utils/formatPrice';
+import { productImageSrc, handleImageError } from '../utils/productImage';
 import styles from './CheckoutPage.module.css';
 
 const EMPTY_ADDRESS = { name: '', phone: '', address: '', city: '', zipCode: '' };
@@ -133,6 +135,8 @@ export default function CheckoutPage() {
             </div>
           </div>
 
+          <CancellationRightsNotice />
+
           <button type="submit" className={styles.payBtn} disabled={paying}>
             {paying ? 'מעבד הזמנה...' : `לתשלום — ${formatPrice(total)}`}
           </button>
@@ -145,9 +149,12 @@ export default function CheckoutPage() {
           <ul className={styles.itemList}>
             {items.map((item) => (
               <li key={`${item.id}:${item.variantId ?? ''}`} className={styles.item}>
-                {item.image && (
-                  <img src={item.image} alt={item.name} className={styles.itemImg} />
-                )}
+                <img
+                  src={productImageSrc(item.image)}
+                  alt={item.name}
+                  className={styles.itemImg}
+                  onError={handleImageError}
+                />
                 <div className={styles.itemInfo}>
                   <span className={styles.itemName}>{item.name}</span>
                   <span className={styles.itemQty}>× {item.quantity}</span>

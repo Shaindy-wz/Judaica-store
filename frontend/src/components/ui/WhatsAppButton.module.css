@@ -1,6 +1,6 @@
 .button {
   position: fixed;
-  bottom: 24px;
+  bottom: var(--floating-bottom);
   inset-inline-start: 24px;
   z-index: 40;
   display: flex;
@@ -25,4 +25,10 @@
   .button span:last-child {
     display: none;
   }
+}
+
+/* Fallback styling while no WhatsApp number is configured */
+.contact {
+  background: var(--gradient-navy);
+  border: 1px solid var(--color-gold);
 }

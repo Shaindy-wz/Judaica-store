@@ -3,6 +3,7 @@ import ProductPriceRange from './ProductPriceRange';
 import ProductOptions from './ProductOptions';
 import InventoryStatus from './InventoryStatus';
 import AddToCartButton from './AddToCartButton';
+import ReturnPolicyNotice from './ReturnPolicyNotice';
 import styles from './ProductDetails.module.css';
 
 export default function ProductDetails({ product }) {
@@ -43,6 +44,7 @@ export default function ProductDetails({ product }) {
         requiresSelection={requiresSelection}
       />
       <AddToCartButton product={product} variant={matchedVariant} disabled={!canAddToCart} />
+      <ReturnPolicyNotice returnPolicy={product.returnPolicy} />
       {product.description && <p className={styles.description}>{product.description}</p>}
       {product.specs && (
         <dl className={styles.specs}>

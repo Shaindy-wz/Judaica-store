@@ -89,6 +89,8 @@
 │       │   ├── AccountPage.jsx
 │       │   ├── OrdersPage.jsx
 │       │   ├── AboutPage.jsx
+│       │   ├── ContactPage.jsx                ← NEW (contact details + mailto form)
+│       │   ├── ContentPage.module.css         ← NEW (shared styling for the static pages)
 │       │   ├── BranchesPage.jsx               ← NEW
 │       │   ├── BlogPage.jsx / BlogPostPage.jsx ← NEW
 │       │   ├── FaqPage.jsx                    ← NEW
@@ -139,9 +141,13 @@
 │       │   ├── globals.css
 │       │   ├── variables.css
 │       │   └── rtl.css
+│       ├── config/                           ← NEW
+│       │   └── business.js                    ← NEW (phone/email/address/hours — single source)
 │       ├── utils/
 │       │   ├── formatPrice.js
 │       │   ├── validators.js
+│       │   ├── productImage.js                ← NEW (placeholder fallback for missing images)
+│       │   ├── cookieConsent.js               ← NEW (consent storage + hasAnalyticsConsent)
 │       │   └── hebrewSearchNormalize.js       ← NEW (niqqud/dagesh normalisation)
 │       ├── App.jsx
 │       └── main.jsx
@@ -180,6 +186,10 @@
         │   ├── auth.js
         │   ├── adminOnly.js                   ← NEW
         │   └── errorHandler.js
+        ├── scripts/                           ← NEW — showcase / demo data
+        │   ├── demoCatalog.js                 ← categories, products, coupons, review texts
+        │   ├── generateProductImages.js       ← writes the SVG artwork (npm run seed:images)
+        │   └── seedCatalog.js                 ← upserts the catalogue (npm run seed:catalog)
         └── app.js
 ```
 
@@ -191,3 +201,5 @@
 - All backend routes under `/api/admin/*` are protected server-side by the `adminOnly` middleware — never rely solely on frontend guards.
 - The `services/` folder abstracts all API calls; components never call `fetch` / `axios` directly.
 - The `utils/hebrewSearchNormalize.js` is used both client-side (for instant filtering) and server-side (to build `searchTokens` field on Product documents).
+- **Demo catalogue.** `npm run seed:demo` (in `backend/`) generates the artwork and upserts 47 showcase products across all categories, plus sub-categories, approved reviews and two coupons. Everything is upserted by slug/code, so it is safe to re-run and never deletes admin-entered data. The generated images are illustrated SVG placeholders under `frontend/public/images/products/` and `…/categories/` — replace them with the client's real photography using the same file names (open question §20.5).
+- **Missing images never break a page.** `utils/productImage.js` swaps in `/images/product-placeholder.svg` for any product whose image is absent or fails to load.

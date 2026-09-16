@@ -7,7 +7,8 @@
 
 html {
   font-family: var(--font-body);
-  font-size: 16px;
+  /* --a11y-font-scale is set by the AccessibilityWidget (defaults to 1) */
+  font-size: calc(16px * var(--a11y-font-scale, 1));
   color: var(--color-text-primary);
   background: var(--color-bg);
 }
@@ -84,4 +85,78 @@ h1, h2, h3, h4 {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+
+/* Cookie banner is on screen — lift the floating buttons above it. */
+html[data-cookie-banner] {
+  --floating-bottom: 156px;
+}
+
+@media (max-width: 899px) {
+  html[data-cookie-banner] {
+    --floating-bottom: 232px;
+  }
+}
+
+/* ============================================================
+   Accessibility preferences — toggled by AccessibilityWidget.
+   Required by the Israeli Accessibility Regulations (2013).
+   ============================================================ */
+
+/* High contrast */
+html[data-a11y-contrast] {
+  --color-bg: #ffffff;
+  --color-white: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-alt: #ffffff;
+  --color-text-primary: #000000;
+  --color-text-secondary: #000000;
+  --color-text-muted: #1a1a1a;
+  --color-navy: #00204d;
+  --color-navy-light: #00204d;
+  --color-navy-deep: #000000;
+  --color-gold: #6b4f00;
+  --color-gold-dark: #4a3600;
+  --color-gold-light: #8a6800;
+  --color-border: #000000;
+  --color-border-light: #000000;
+  --gradient-navy: linear-gradient(#00204d, #00204d);
+  --gradient-gold: linear-gradient(#6b4f00, #6b4f00);
+  --gradient-surface: linear-gradient(#ffffff, #ffffff);
+}
+
+html[data-a11y-contrast] img {
+  filter: contrast(1.15);
+}
+
+/* Highlight links */
+html[data-a11y-links] a {
+  text-decoration: underline !important;
+  text-underline-offset: 3px;
+  outline: 2px solid var(--color-gold-dark);
+  outline-offset: 2px;
+}
+
+/* Stop animations */
+html[data-a11y-no-motion],
+html[data-a11y-no-motion] *,
+html[data-a11y-no-motion] *::before,
+html[data-a11y-no-motion] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* Readable / dyslexia-friendly font */
+html[data-a11y-readable] {
+  --font-display: Verdana, Tahoma, Arial, sans-serif;
+  --font-body: Verdana, Tahoma, Arial, sans-serif;
+  --letter-spacing-tight: 0.01em;
+}
+
+html[data-a11y-readable] body {
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+  word-spacing: 0.08em;
 }

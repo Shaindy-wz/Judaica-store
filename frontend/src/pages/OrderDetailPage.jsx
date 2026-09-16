@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import orderService from '../services/orderService';
 import { formatPrice } from '../utils/formatPrice';
+import { productImageSrc, handleImageError } from '../utils/productImage';
 import styles from './OrderDetailPage.module.css';
 
 const STATUS_LABELS = {
@@ -81,9 +82,12 @@ export default function OrderDetailPage() {
           <ul className={styles.items}>
             {order.items.map((item, i) => (
               <li key={i} className={styles.item}>
-                {item.image && (
-                  <img src={item.image} alt={item.name} className={styles.itemImg} />
-                )}
+                <img
+                  src={productImageSrc(item.image)}
+                  alt={item.name}
+                  className={styles.itemImg}
+                  onError={handleImageError}
+                />
                 <div className={styles.itemInfo}>
                   <span className={styles.itemName}>{item.name}</span>
                   <span className={styles.itemMeta}>כמות: {item.quantity}</span>

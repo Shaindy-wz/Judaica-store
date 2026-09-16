@@ -43,7 +43,12 @@ export async function listCustomers(req, res) {
 }
 
 export async function getCustomerOrders(req, res) {
-  const orders = await Order.find({ user: req.params.id })
-    .sort({ createdAt: -1 });
-  res.json(orders);
+  const customer = await User.findById(req.params.id, '-passwordHash');
+  if (!customer) {
+    return res.status(404).json({ message: 'הלקוח לא נמצא' });
+  }
+
+  const orders = await Order.find({ user: req.params.id }).sort({ createdAt: -1 });
+
+  res.json({ customer: customer.toJSON(), orders });
 }

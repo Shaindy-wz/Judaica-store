@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSearch } from '../../context/SearchContext';
+import { productImageSrc, handleImageError } from '../../utils/productImage';
 import styles from './SearchOverlay.module.css';
 
 export default function SearchOverlay() {
@@ -68,9 +69,10 @@ export default function SearchOverlay() {
                 <li key={product._id} role="option">
                   <Link to={`/product/${product.slug}`} className={styles.result} onClick={close}>
                     <img
-                      src={product.images?.[0] || '/assets/images/placeholder.jpg'}
+                      src={productImageSrc(product.images?.[0])}
                       alt={product.name}
                       className={styles.resultImage}
+                      onError={handleImageError}
                     />
                     <div className={styles.resultInfo}>
                       <span className={styles.resultName}>{product.name}</span>

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styles from './ProductFilters.module.css';
 
 export default function ProductFilters({ subCategories, minPrice, maxPrice, onChange }) {
@@ -9,7 +10,7 @@ export default function ProductFilters({ subCategories, minPrice, maxPrice, onCh
           <ul>
             {subCategories.map((sub) => (
               <li key={sub._id}>
-                <a href={`/category/${sub.slug}`}>{sub.name}</a>
+                <Link to={`/category/${sub.slug}`}>{sub.name}</Link>
               </li>
             ))}
           </ul>

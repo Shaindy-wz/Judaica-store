@@ -19,7 +19,7 @@
 
 | Param | Type | Description |
 |-------|------|-------------|
-| `category` | string | Category slug |
+| `category` | string | Category slug. A **parent** slug also returns the products of all its sub-categories. |
 | `page` | number | Page number (default: 1) |
 | `limit` | number | Items per page (default: 24) |
 | `minPrice` | number | Minimum price filter |
@@ -174,3 +174,4 @@
 | PUT | `/api/admin/reviews/:id/approve` | Approve a review |
 | PUT | `/api/admin/reviews/:id/reject` | Reject a review |
 | GET | `/api/admin/customers` | Customer list |
+| GET | `/api/admin/customers/:id/orders` | Single customer + their orders. Returns `{ customer, orders }` (404 if the customer does not exist) |

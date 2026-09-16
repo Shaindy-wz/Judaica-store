@@ -145,6 +145,22 @@ See component spec §5.12. Full page version of the ShabbatTimesWidget with:
 
 ---
 
+## 6.7b About & Contact Pages (`/about`, `/contact`)
+
+| Route | Content |
+|-------|---------|
+| `/about` | Store story, the values grid, and a CTA to `/shop` + `/contact` |
+| `/contact` | Contact-method cards (phone / email / WhatsApp / address), opening hours, and a message form |
+
+The contact form has **no backend endpoint**. On submit it composes a `mailto:` with the
+visitor's details pre-filled, so it is a working way to reach the business without a server
+route. If a `POST /api/contact` endpoint is added later, swap the handler and record it in §7.
+
+All contact details (phone, email, WhatsApp, address, opening hours, legal name) come from
+`frontend/src/config/business.js` — the single place to update them before launch.
+
+---
+
 ## 6.8 Legal & Compliance Pages (NEW — mandatory)
 
 | Route | Content |
@@ -153,6 +169,9 @@ See component spec §5.12. Full page version of the ShabbatTimesWidget with:
 | `/privacy-policy` | Privacy Policy (data collected, usage, third parties) |
 | `/accessibility-statement` | Accessibility Statement (WCAG 2.1 AA / Israeli Standard 5568, see §10) |
 | `/shipping-returns` | Shipping & Returns Policy (referenced from "Cancellation Rights Notice" throughout the site) |
+
+**Status:** all four pages are implemented, and each file carries a header comment stating
+that the Hebrew text still requires review by a qualified Israeli attorney before launch.
 
 All of these pages contain static legal text (Markdown / CMS managed), but the **content must be legally vetted by a lawyer or legal advisor**, not drafted by the AI. See §10.
 

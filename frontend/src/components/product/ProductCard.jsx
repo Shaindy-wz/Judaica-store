@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import StarRating from '../ui/StarRating';
 import { formatPrice } from '../../utils/formatPrice';
+import { productImageSrc, handleImageError } from '../../utils/productImage';
 import styles from './ProductCard.module.css';
 
 export default function ProductCard({
@@ -25,7 +26,13 @@ export default function ProductCard({
       <Link to={`/product/${slug}`} className={styles.imageWrap}>
         <span className={styles.cornerStart} aria-hidden="true" />
         <span className={styles.cornerEnd} aria-hidden="true" />
-        <img src={image} alt={name} className={styles.image} />
+        <img
+          src={productImageSrc(image)}
+          alt={name}
+          className={styles.image}
+          loading="lazy"
+          onError={handleImageError}
+        />
       </Link>
       <div className={styles.info}>
         <h3 className={styles.name}>

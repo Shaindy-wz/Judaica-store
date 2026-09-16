@@ -42,16 +42,14 @@ export default function AdminCustomerOrdersPage() {
       <div className={styles.header}>
         <Link to="/admin/customers" className={styles.email}>← חזרה ללקוחות</Link>
       </div>
-      {data && (
-        <h1 className={styles.title}>
-          הזמנות: {data.customer.firstName} {data.customer.lastName}
-        </h1>
-      )}
+      <h1 className={styles.title}>
+        הזמנות{data?.customer ? `: ${data.customer.firstName ?? ''} ${data.customer.lastName ?? ''}`.trimEnd() : ''}
+      </h1>
       {error && <p className={styles.error}>{error}</p>}
       {loading ? (
         <p className={styles.loading}>טוען...</p>
       ) : data ? (
-        <AdminTable columns={columns} rows={data.orders} emptyText="אין הזמנות" />
+        <AdminTable columns={columns} rows={data.orders ?? []} emptyText="אין הזמנות" />
       ) : null}
     </div>
   );

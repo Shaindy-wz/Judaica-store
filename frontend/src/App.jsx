@@ -15,6 +15,13 @@ import CheckoutPage from './pages/CheckoutPage';
 import OrdersPage from './pages/OrdersPage';
 import OrderDetailPage from './pages/OrderDetailPage';
 import AccountPage from './pages/AccountPage';
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
+import FaqPage from './pages/FaqPage';
+import ShippingReturnsPage from './pages/ShippingReturnsPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import AccessibilityStatementPage from './pages/AccessibilityStatementPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Admin
@@ -70,6 +77,16 @@ export default function App() {
               <Route path="orders" element={<OrdersPage />} />
               <Route path="orders/:id" element={<OrderDetailPage />} />
               <Route path="account" element={<AccountPage />} />
+
+              {/* Content & legal pages */}
+              <Route path="about" element={<AboutPage />} />
+              <Route path="contact" element={<ContactPage />} />
+              <Route path="faq" element={<FaqPage />} />
+              <Route path="shipping-returns" element={<ShippingReturnsPage />} />
+              <Route path="terms" element={<TermsPage />} />
+              <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="accessibility-statement" element={<AccessibilityStatementPage />} />
+
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>

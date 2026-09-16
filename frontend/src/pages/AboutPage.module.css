@@ -1,0 +1,119 @@
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--space-7);
+  align-items: center;
+  margin: var(--space-6) 0 var(--space-8);
+}
+
+.introText {
+  font-size: var(--text-base);
+  line-height: 1.9;
+  color: var(--color-text-secondary);
+}
+
+.introText p {
+  margin: 0 0 var(--space-4);
+}
+
+.introText a {
+  color: var(--color-navy-light);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.introVisual {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  background: var(--gradient-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.emblem {
+  width: 55%;
+  opacity: 0.9;
+}
+
+/* ===== Values ===== */
+.valuesSection {
+  margin-bottom: var(--space-8);
+}
+
+.values {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.value {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-xs);
+}
+
+.valueIcon {
+  display: block;
+  font-size: var(--text-3xl);
+  line-height: 1;
+  margin-bottom: var(--space-3);
+}
+
+.value h3 {
+  font-size: var(--text-lg);
+  color: var(--color-navy);
+  margin: 0 0 var(--space-2);
+}
+
+.value p {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.75;
+  color: var(--color-text-secondary);
+}
+
+/* ===== CTA ===== */
+.cta {
+  background: var(--gradient-navy);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8) var(--space-5);
+  text-align: center;
+  color: var(--color-white);
+}
+
+.cta h2 {
+  font-size: var(--text-3xl);
+  margin: 0 0 var(--space-2);
+  color: var(--color-white);
+}
+
+.cta p {
+  margin: 0 0 var(--space-5);
+  color: var(--color-gold-light);
+}
+
+.ctaActions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 899px) {
+  .intro {
+    grid-template-columns: 1fr;
+  }
+
+  .introVisual {
+    order: -1;
+    aspect-ratio: 16 / 9;
+  }
+
+  .emblem {
+    width: 30%;
+  }
+}
