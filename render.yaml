@@ -1,0 +1,50 @@
+# One Render Web Service serves both the API and the built React app, so the
+# store runs on a single origin exactly like it does locally.
+#
+# Secrets (sync: false) are never stored in git — set them in the Render
+# dashboard under Environment.
+services:
+  - type: web
+    name: judaica-store
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/products
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "20"
+      # Render injects PORT itself; server.js already reads it.
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: STORE_NAME
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_SECURE
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: GREEN_INVOICE_API_KEY
+        sync: false
+      - key: GREEN_INVOICE_API_SECRET
+        sync: false
+      - key: GREEN_INVOICE_ENV
+        sync: false
+      - key: GREEN_INVOICE_DOC_TYPE
+        sync: false
+      - key: GREEN_INVOICE_VAT_TYPE
+        sync: false
