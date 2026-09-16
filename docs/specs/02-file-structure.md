@@ -10,7 +10,11 @@
 
 ```
 /
+├── render.yaml                         ← NEW (Render blueprint — one web service)
+├── package.json                        ← root scripts: dev / build / start
 ├── frontend/
+│   ├── .env.production                 ← NEW (pins VITE_API_URL=/api for the build)
+│   ├── dist/                           ← build output (gitignored; served by Express in production)
 │   ├── public/
 │   │   ├── index.html
 │   │   ├── robots.txt                 ← SEO
@@ -190,7 +194,7 @@
         │   ├── demoCatalog.js                 ← categories, products, coupons, review texts
         │   ├── generateProductImages.js       ← writes the SVG artwork (npm run seed:images)
         │   └── seedCatalog.js                 ← upserts the catalogue (npm run seed:catalog)
-        └── app.js
+        └── app.js                          ← API routes, then static frontend/dist + SPA fallback
 ```
 
 ---
@@ -202,4 +206,5 @@
 - The `services/` folder abstracts all API calls; components never call `fetch` / `axios` directly.
 - The `utils/hebrewSearchNormalize.js` is used both client-side (for instant filtering) and server-side (to build `searchTokens` field on Product documents).
 - **Demo catalogue.** `npm run seed:demo` (in `backend/`) generates the artwork and upserts 47 showcase products across all categories, plus sub-categories, approved reviews and two coupons. Everything is upserted by slug/code, so it is safe to re-run and never deletes admin-entered data. The generated images are illustrated SVG placeholders under `frontend/public/images/products/` and `…/categories/` — replace them with the client's real photography using the same file names (open question §20.5).
+- **One service in production.** Express serves the API *and* `frontend/dist` from the same origin, so the bundle calls `/api` relatively and there is no CORS hop. `/api/*` keeps a JSON 404; every other `GET` falls back to `index.html` for React Router. See `01-overview-and-stack.md §Deployment`.
 - **Missing images never break a page.** `utils/productImage.js` swaps in `/images/product-placeholder.svg` for any product whose image is absent or fails to load.

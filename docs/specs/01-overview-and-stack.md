@@ -76,4 +76,62 @@ This spec describes a full-stack Hebrew e-commerce store. The frontend (componen
 | **Shabbat times** | Hebcal API (free tier) | **Required** |
 | **Analytics** | Google Analytics 4 + Meta Pixel | **Required** |
 | **Search** | MongoDB text index + Hebrew normalisation on server (no Elasticsearch initially) | **Required** |
-| Hosting (suggested) | Frontend: Vercel/Netlify · Backend: Render/Railway · DB: MongoDB Atlas | **Suggested** |
+| Hosting | Single Render web service (Express serves the API **and** the built React app) · DB: MongoDB Atlas | Confirmed — see §Deployment |
+
+---
+
+## Deployment
+
+The site is deployed as **one** Render web service. Express serves the JSON API
+and the built React app from the same origin, so the browser calls `/api/...`
+relatively — there is no second host to keep in sync and no CORS hop in
+production.
+
+| | |
+|---|---|
+| Build command | `npm run build` (installs both workspaces, then `vite build`) |
+| Start command | `npm start` (runs `backend/src/server.js`) |
+| Health check | `/api/products` |
+| Blueprint | `render.yaml` at the repo root |
+
+### How requests are routed
+
+`backend/src/app.js` resolves each request in this order:
+
+1. `/uploads/*` — admin-uploaded files on disk
+2. `/api/*` — the routers; anything unmatched returns a **JSON** 404
+3. static files from `frontend/dist`
+4. any remaining `GET` — returns `index.html` so React Router can resolve the
+   path client-side (this is what keeps a deep link working on refresh)
+
+### Environment variables
+
+Set these in the Render dashboard; `render.yaml` marks them `sync: false` so no
+secret is ever committed.
+
+| Variable | Production value |
+|---|---|
+| `MONGODB_URI` | the Atlas SRV string |
+| `NODE_ENV` | `production` |
+| `FRONTEND_URL` | the deployed origin — accepts a comma-separated list |
+| `PORT` | **do not set**; Render injects it |
+
+`JWT_SECRET`, the `SMTP_*` block and the `GREEN_INVOICE_*` block carry the same
+meaning as in local development. See `backend/.env.example`.
+
+### Why `frontend/.env.production` is committed
+
+`frontend/.env` is gitignored and holds `VITE_API_URL=http://localhost:5000/api`
+for local dev. Vite inlines that value at build time, so without an override the
+production bundle would ship pointing at the visitor's own machine.
+`.env.production` pins `VITE_API_URL=/api`, which takes precedence over `.env`
+during `vite build` and keeps the bundle host-agnostic. It contains no secrets.
+
+### Seeding a fresh database
+
+Atlas starts empty. Run the seed against it once — the scripts upsert by
+slug/code, so they are safe to re-run and never delete admin-entered data:
+
+```bash
+MONGODB_URI="<atlas-uri>" npm run seed:demo
+```
