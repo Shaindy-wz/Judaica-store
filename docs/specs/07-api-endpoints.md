@@ -13,7 +13,20 @@
 | GET | `/api/health` | Liveness probe. **Public and unauthenticated.** |
 
 Returns `{ status, uptime, db }`, where `db` is `connected` / `connecting` /
-`disconnected` / `disconnecting`.
+`disconnected` / `disconnecting`. When `db` is not `connected` it also returns
+`reason`, the last connect failure reduced to one of a **closed set** of codes:
+
+| `reason` | Fix |
+|---|---|
+| `missing-uri` | `MONGODB_URI` is not set on the host |
+| `malformed-uri` | `MONGODB_URI` is not a valid `mongodb://` / `mongodb+srv://` string |
+| `auth-failed` | wrong database user or password in the URI |
+| `ip-not-allowlisted` | add the host to Atlas → Network Access |
+| `dns-failure` | the cluster hostname does not resolve — usually a typo |
+| `unreachable` | the cluster refused or timed out |
+
+The codes are a fixed vocabulary rather than the raw driver message precisely
+so that no hostname, URI or credential can reach a public response.
 
 It deliberately issues **no database query** and is mounted before every other
 router, so it still answers while MongoDB is unreachable. This is what the host
