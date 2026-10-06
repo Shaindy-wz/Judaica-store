@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { requireAuth, adminOnly } from '../middleware/auth.js';
 import { uploadSingle } from '../middleware/upload.js';
+import Image from '../models/Image.js';
 import { getDashboard } from '../controllers/admin/dashboardController.js';
 import {
   listProducts,
@@ -54,11 +55,18 @@ router.post('/products', createProduct);
 router.put('/products/:id', updateProduct);
 router.delete('/products/:id', deleteProduct);
 
-// Image upload — local storage (dev). Set CLOUDINARY_* env vars to use Cloudinary instead.
-router.post('/upload', uploadSingle, (req, res) => {
-  if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
-  const url = `/uploads/products/${req.file.filename}`;
-  res.json({ url });
+// Image upload — stored in MongoDB (the host's disk does not survive restarts).
+// Returns an absolute URL because the site and the API are on different hosts.
+router.post('/upload', uploadSingle, async (req, res) => {
+  if (!req.file) return res.status(400).json({ message: 'לא נבחר קובץ' });
+  const image = await Image.create({
+    data: req.file.buffer,
+    contentType: req.file.mimetype,
+    size: req.file.size,
+    originalName: req.file.originalname,
+  });
+  const url = `${req.protocol}://${req.get('host')}/api/images/${image._id}`;
+  res.status(201).json({ url });
 });
 
 // Cloudinary direct-upload signature (optional, for production)

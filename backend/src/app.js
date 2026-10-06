@@ -13,11 +13,15 @@ import adminRouter from './routes/admin.js';
 import searchRouter from './routes/search.js';
 import reviewsRouter from './routes/reviews.js';
 import healthRouter from './routes/health.js';
+import imagesRouter from './routes/images.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
+
+// Render terminates HTTPS at its proxy; trust it so req.protocol is 'https'.
+app.set('trust proxy', 1);
 
 // FRONTEND_URL may hold a comma-separated list, so the same server can accept
 // the local dev origin and the deployed one at the same time.
@@ -50,6 +54,7 @@ app.use('/api/coupons', couponsRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/reviews', reviewsRouter);
+app.use('/api/images', imagesRouter);
 
 // Anything under /api that reached this point is a genuine 404 — answer with
 // JSON rather than falling through to the SPA shell below.

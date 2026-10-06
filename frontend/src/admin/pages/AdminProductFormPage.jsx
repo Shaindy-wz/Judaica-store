@@ -72,10 +72,7 @@ export default function AdminProductFormPage() {
   // Load existing product for edit
   useEffect(() => {
     if (!isEdit) return;
-    fetch(`/api/admin/products?limit=1000`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    })
-      .then((r) => r.json())
+    getAdminProducts({ limit: 1000 })
       .then(({ items }) => {
         const p = items.find((x) => x._id === id);
         if (!p) return;

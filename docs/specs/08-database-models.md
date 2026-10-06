@@ -24,7 +24,7 @@ const ProductSchema = new Schema({
   description:   String,
   sku:           String,                   // Base SKU (for products without variants)
 
-  images:        [String],                 // Array of image URLs (S3 / Cloudinary)
+  images:        [String],                 // Image URLs — absolute /api/images/:id for uploads, /images/... for bundled demo art
   category:      { type: ObjectId, ref: 'Category' },
   subCategory:   String,
   tags:          [String],                 // NEW — for filtering, sale badges, SEO
@@ -95,6 +95,19 @@ const CategorySchema = new Schema({
 Categories support up to 3 levels of depth (example: Mezuzot → Wooden Mezuzah Cases → Up to 10cm). Breadcrumb components reconstruct the ancestor chain by following `parent` references.
 
 ---
+
+## Image (NEW)
+
+Uploaded product images. Stored in MongoDB because the host's disk is wiped on every restart/redeploy.
+
+```js
+const ImageSchema = new Schema({
+  data:         { type: Buffer, required: true },
+  contentType:  { type: String, required: true },   // e.g. image/jpeg
+  size:         { type: Number, required: true },   // bytes, max 5MB
+  originalName: String,
+}, { timestamps: true });
+```
 
 ## Review (NEW)
 

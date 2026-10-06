@@ -1,11 +1,13 @@
 const BASE_URL = import.meta.env.VITE_API_URL ?? '/api';
 
 async function request(path, options = {}) {
+  // FormData needs the browser to set its own multipart Content-Type (with boundary).
+  const isFormData = options.body instanceof FormData;
   const res = await fetch(`${BASE_URL}${path}`, {
     ...options,
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...options.headers,
     },
   });
@@ -18,7 +20,14 @@ async function request(path, options = {}) {
   }
 
   if (res.status === 204) return null;
-  return res.json();
+  // An empty or non-JSON success body means we didn't reach the API (e.g. a proxy or static host answered).
+  const text = await res.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error('תגובה לא תקינה מהשרת');
+  }
 }
 
 export default {
@@ -26,4 +35,5 @@ export default {
   post: (path, body) => request(path, { method: 'POST', body: JSON.stringify(body) }),
   put: (path, body) => request(path, { method: 'PUT', body: JSON.stringify(body) }),
   delete: (path) => request(path, { method: 'DELETE' }),
+  upload: (path, formData) => request(path, { method: 'POST', body: formData }),
 };

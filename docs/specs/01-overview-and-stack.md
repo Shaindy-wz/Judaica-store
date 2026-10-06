@@ -99,7 +99,7 @@ production.
 `backend/src/app.js` resolves each request in this order:
 
 1. `/api/health` — mounted first, touches no database
-2. `/uploads/*` — admin-uploaded files on disk
+2. `/uploads/*` — legacy files on disk (new uploads are stored in MongoDB and served from `/api/images/:id`)
 3. `/api/*` — the routers; anything unmatched returns a **JSON** 404
 4. static files from `frontend/dist` — hashed files under `/assets` are served
    with `Cache-Control: immutable` for a year; `index.html` is always `no-cache`

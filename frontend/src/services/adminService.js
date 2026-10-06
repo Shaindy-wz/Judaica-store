@@ -13,23 +13,12 @@ export const updateProduct = (id, data) => api.put(`/admin/products/${id}`, data
 export const deleteProduct = (id) => api.delete(`/admin/products/${id}`);
 
 export async function uploadImageToCloudinary(file) {
-  const token = localStorage.getItem('token');
   const formData = new FormData();
   formData.append('file', file);
 
-  const res = await fetch('/api/admin/upload', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
-    body: formData,
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ message: 'Upload failed' }));
-    throw new Error(err.message);
-  }
-
-  const data = await res.json();
-  return data.url; // e.g. /uploads/products/filename.jpg — served via Vite proxy in dev
+  const data = await api.upload('/admin/upload', formData);
+  if (!data?.url) throw new Error('העלאת התמונה נכשלה');
+  return data.url; // e.g. /uploads/products/filename.jpg
 }
 
 // Orders

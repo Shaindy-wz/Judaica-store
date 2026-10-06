@@ -187,6 +187,12 @@ external uptime ping that keeps a free-plan instance warm.
 
 ---
 
+## Images
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/images/:id` | Public. Serves an uploaded image with its stored `Content-Type`, `Cache-Control: immutable` (1 year) and `Cross-Origin-Resource-Policy: cross-origin`. 404 for an unknown id |
+
 ## Admin Routes (NEW — all behind `adminOnly` middleware)
 
 | Method | Path | Description |
@@ -196,6 +202,7 @@ external uptime ping that keeps a free-plan instance warm.
 | POST | `/api/admin/products` | Create new product |
 | PUT | `/api/admin/products/:id` | Update product |
 | DELETE | `/api/admin/products/:id` | Delete product |
+| POST | `/api/admin/upload` | Upload one product image (multipart field `file`, image/*, max 5MB). Stored in MongoDB (`Image`); returns `201 { url }` with an **absolute** URL to `GET /api/images/:id` |
 | GET | `/api/admin/orders` | All orders, filterable by status |
 | PUT | `/api/admin/orders/:id/status` | Update order status + tracking number |
 | POST | `/api/admin/coupons` | Create coupon |

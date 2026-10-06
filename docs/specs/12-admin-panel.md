@@ -51,7 +51,7 @@ The form must support all fields in the Product model (§9):
 | Base price | Number |
 | Original price (sale) | Number (optional) |
 | Badge | Select: None / חדש / מבצע / פופולרי |
-| Images | `ImageUploader.jsx` — multi-image upload to S3/Cloudinary |
+| Images | `ImageUploader.jsx` — multi-image upload (stored in MongoDB) |
 | Specs: material, kashrut, hashgacha, tradition, craftsmanship | Text inputs |
 | Return policy: returnable, customizable, nonReturnableReason | Toggle + text |
 | SEO: metaTitle, metaDescription | Text inputs with character count |
@@ -60,7 +60,7 @@ The form must support all fields in the Product model (§9):
 
 ### ImageUploader Component (`admin/components/ImageUploader.jsx`)
 - Drag-and-drop file upload
-- Uploads directly to S3 / Cloudinary via pre-signed URL (server issues the URL, never handles the file binary itself)
+- Uploads via `POST /api/admin/upload` (through `services/api.js`, so the auth cookie and `VITE_API_URL` are used); the server stores the image in MongoDB and returns an absolute URL
 - Shows upload progress and thumbnails
 - Supports reordering images (first image = main product image)
 
