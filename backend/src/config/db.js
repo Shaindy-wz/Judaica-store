@@ -27,8 +27,20 @@ function classify(err) {
   return 'unknown';
 }
 
+// Values pasted into a hosting dashboard often carry stray whitespace, wrapping
+// quotes, or the whole "MONGODB_URI=..." line; the driver rejects all of them as
+// an invalid scheme, so strip those before connecting.
+function cleanUri(raw) {
+  if (!raw) return raw;
+  return raw
+    .trim()
+    .replace(/^MONGODB_URI\s*=\s*/, '')
+    .replace(/^(['"])(.*)\1$/, '$2')
+    .trim();
+}
+
 export async function connectDB() {
-  const uri = process.env.MONGODB_URI;
+  const uri = cleanUri(process.env.MONGODB_URI);
   if (!uri) {
     lastFailure = 'missing-uri';
     throw new Error('MONGODB_URI is not set in the environment');
