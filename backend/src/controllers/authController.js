@@ -11,13 +11,21 @@ function signToken(user) {
   });
 }
 
-function setCookie(res, token) {
-  res.cookie(COOKIE_NAME, token, {
+// In production the site and the API can live on different hosts (e.g. two
+// *.onrender.com services, which browsers treat as separate sites), so the
+// cookie must be SameSite=None to be sent on API calls at all; that in turn
+// requires Secure. CORS still limits credentialed requests to FRONTEND_URL.
+function cookieOptions() {
+  const isProd = process.env.NODE_ENV === 'production';
+  return {
     httpOnly: true,
-    sameSite: 'strict',
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: COOKIE_MAX_AGE,
-  });
+    sameSite: isProd ? 'none' : 'strict',
+    secure: isProd,
+  };
+}
+
+function setCookie(res, token) {
+  res.cookie(COOKIE_NAME, token, { ...cookieOptions(), maxAge: COOKIE_MAX_AGE });
 }
 
 function toPublicUser(user) {
@@ -65,7 +73,7 @@ export async function login(req, res) {
 }
 
 export async function logout(req, res) {
-  res.clearCookie(COOKIE_NAME, { httpOnly: true, sameSite: 'strict' });
+  res.clearCookie(COOKIE_NAME, cookieOptions());
   res.json({ message: 'Logged out' });
 }
 
