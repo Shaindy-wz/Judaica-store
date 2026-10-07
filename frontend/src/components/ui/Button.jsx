@@ -6,7 +6,7 @@ export default function Button({ href, variant = 'primary', children, onClick, t
 
   if (href) {
     return (
-      <Link to={href} className={className} {...rest}>
+      <Link to={href} className={className} onClick={onClick} {...rest}>
         {children}
       </Link>
     );

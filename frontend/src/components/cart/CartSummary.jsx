@@ -3,7 +3,7 @@ import { formatPrice } from '../../utils/formatPrice';
 import Button from '../ui/Button';
 import styles from './CartSummary.module.css';
 
-export default function CartSummary({ checkoutHref = '/checkout' }) {
+export default function CartSummary({ checkoutHref = '/checkout', onCheckout }) {
   const { subtotal, discount, total } = useCart();
 
   return (
@@ -22,7 +22,7 @@ export default function CartSummary({ checkoutHref = '/checkout' }) {
         <span>סה"כ</span>
         <span>{formatPrice(total)}</span>
       </div>
-      <Button href={checkoutHref} variant="primary">
+      <Button href={checkoutHref} variant="primary" onClick={onCheckout}>
         להמשך לתשלום
       </Button>
     </div>
