@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   getAdminProducts,
   createProduct,
@@ -216,9 +216,9 @@ export default function AdminProductFormPage() {
                   <Field label="תת-קטגוריה">
                     <div className={styles.noSubCats}>
                       <span>אין תת-קטגוריות לקטגוריה זו עדיין.</span>
-                      <a href="/admin/categories" className={styles.createSubLink}>
+                      <Link to="/admin/categories" className={styles.createSubLink}>
                         צור תת-קטגוריות ←
-                      </a>
+                      </Link>
                     </div>
                   </Field>
                 );
