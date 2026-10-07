@@ -137,11 +137,27 @@ export default function AdminOrderDetailPage() {
                 <p>{order.shipping.address}</p>
                 <p>{order.shipping.city}{order.shipping.zipCode ? ` ${order.shipping.zipCode}` : ''}</p>
                 <p>{order.shipping.phone}</p>
+                {order.shipping.email && <p className={styles.muted}>{order.shipping.email}</p>}
               </>
             ) : (
               <p className={styles.muted}>—</p>
             )}
           </section>
+
+          {/* Payment */}
+          {order.payment?.method && (
+            <section className={styles.card}>
+              <h2 className={styles.cardTitle}>תשלום</h2>
+              <p>{order.payment.method === 'nedarim' ? 'אשראי — נדרים פלוס' : 'תשלום בדיקה (ללא חיוב)'}</p>
+              {order.payment.confirmation && <p>מספר אישור: {order.payment.confirmation}</p>}
+              {order.payment.cardLastDigits && <p>כרטיס: ****{order.payment.cardLastDigits}</p>}
+              {order.payment.installments > 1 && <p>{order.payment.installments} תשלומים</p>}
+              {order.payment.transactionId && <p className={styles.muted}>מזהה עסקה: {order.payment.transactionId}</p>}
+              {order.status === 'pending' && order.payment.lastError && (
+                <p className={styles.muted}>ניסיון אחרון נדחה: {order.payment.lastError}</p>
+              )}
+            </section>
+          )}
 
           {/* Status management */}
           {nextStatuses.length > 0 && (

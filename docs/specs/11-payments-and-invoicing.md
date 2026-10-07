@@ -4,50 +4,69 @@
 
 ---
 
-## 14.1 Payment Provider Options (Decision Required)
+## 14.1 Payment Provider — Nedarim Plus (decided)
 
-One Israeli payment gateway must be chosen before implementing the checkout flow. The integration architecture is provider-agnostic at the component level (`PaymentFrame`), but the specific API calls differ per provider.
+**Provider chosen: Nedarim Plus** (נדרים פלוס, matara.pro), PCI-DSS certified. Integration method: **iframe with a server-created transaction** (Nedarim's "אייפרם: הקמת עסקה בצד שרת"). It's the flow Nedarim recommends for sites, and the most secure one, because the amount is fixed server-side before the customer sees the card form.
 
-| Provider | Strengths | Notes |
-|---------|-----------|-------|
-| **Cardcom** | Most popular in Israel, excellent documentation, broad bank support | Relatively easy API, good React iframe support |
-| **PayPlus** | Modern platform, Israeli-focused, React-native support | Competitive pricing |
-| **Tranzila** | Established, widely used in Israel | Older API, less modern but very stable |
-| **Meshulam** | Simple setup for small businesses, supports instalment payments (credit terms) | Good for businesses with local customer base already using credit instalment |
+Implemented in `backend/src/services/nedarimService.js`, `controllers/paymentController.js`, `routes/payments.js` and `frontend/src/components/checkout/PaymentFrame.jsx`.
 
-> **Decision needed:** Choose ONE provider. The exact `PaymentFrame` implementation and `POST /api/payments/create-session` payload format will depend on this choice. See Open Questions §20.
+### Environment variables
+| Variable | Required | Purpose |
+|---|---|---|
+| `NEDARIM_MOSAD_ID` | yes | Institution number (מספר מוסד) |
+| `NEDARIM_API_VALID` | yes | Iframe validation text (טקסט אימות / ApiValid) |
+| `NEDARIM_API_PASSWORD` | no | Manage3 API key (`npk_…`) — live history cross-check for CallBacks from unlisted IPs |
+| `NEDARIM_WEBHOOK_SECRET` | no | HMAC key for the signed CallBack URL (defaults to `JWT_SECRET`) |
+| `NEDARIM_MAX_INSTALLMENTS` | no | Max installments offered at checkout (1–36, default 1) |
+| `NEDARIM_GROUPE` | no | Category stamped on every store transaction in Nedarim reports |
+| `NEDARIM_CALLBACK_IPS` | no | Override the documented CallBack sender IPs |
+| `PUBLIC_URL` | no | Public base URL for the CallBack (defaults to the request host) |
+
+Until `NEDARIM_MOSAD_ID` + `NEDARIM_API_VALID` are set, production checkout shows "payment unavailable"; development falls back to `POST /api/orders/mock-pay` (which returns 404 in production or once Nedarim is configured).
 
 ---
 
 ## 14.2 Payment Architecture
 
 ```
-[CheckoutPage]
+[CheckoutPage] shipping form + email (+ installments)
   │
   ├─ POST /api/payments/create-session
-  │   → Backend sends order details to payment provider API
-  │   → Provider returns a URL or token for the iframe
+  │   → normalise items, check stock, recompute totals from DB
+  │   → create Order { status: 'pending', payment.method: 'nedarim', payment.clientToken }
+  │   → DebitIframe.aspx?Action=CreateTransaction (Mosad, ApiValid, Amount, Tashlumim,
+  │     customer details, Param1 = orderId,
+  │     CallBack = /api/payments/webhook?order=<id>&sig=<HMAC-SHA256(orderId)>)
+  │   ← Nedarim returns transaction ID → stored as Order.payment.providerSessionId
   │
   ↓
-[PaymentFrame component]
-  │   Renders the provider's iframe (card data never touches our servers)
+[PaymentFrame] iframe https://www.matara.pro/nedarimplus/iframe/
+  │   postMessage GetHeight → 'Height' (auto-resize)
+  │   "Pay" → postMessage { Name: 'FinishTransaction', Value: <transaction ID> }
+  │   ← 'TransactionResponse' { Status: 'OK' | 'Error', Message } — UI only
+  │   Error → "try again" → create-session { orderId, clientToken } → new transaction ID, same order
   │
   ↓
-[Payment Provider]
-  │   Processes the card transaction
-  │   → Sends Webhook: POST /api/payments/webhook
+[Nedarim Plus] charges the card → POST CallBack URL
   │
   ↓
-[Backend webhook handler]
-  │   1. Verify request signature / HMAC (provider-specific)
-  │   2. Update Order.status to 'paid'
-  │   3. Trigger invoice creation (§14.4)
-  │   4. Send order confirmation email (§14.3)
+[POST /api/payments/webhook]
+  │   1. Verify HMAC signature in the URL (403 if invalid). The URL is sent to Nedarim
+  │      server-to-server only — the browser never sees it.
+  │   2. Status OK; Param1 / ID / Amount must match the order
+  │   3. Sender IP on Nedarim's documented list — otherwise cross-check GetHistoryJson
+  │      (if NEDARIM_API_PASSWORD set), else accept on the signature with a warning
+  │   4. Atomic pending → paid (duplicate CallBacks are no-ops); store transactionId,
+  │      confirmation, last 4 digits, installments
+  │   5. Decrement stock, increment coupon usage, handleOrderPaid() (invoice + email)
   │
   ↓
-[Frontend]
-    Redirects to /order-confirmation/:id
+[Frontend] polls GET /api/payments/:orderId/status?token=<clientToken> until paid
+    → logged-in: /orders/:id   guest: inline confirmation screen
+    (after 60 s without confirmation: "payment received, being verified" screen)
 ```
+
+Note: Nedarim's postMessage bridge doesn't work on `localhost` — test the iframe on a deployed domain.
 
 ### Critical Rule
 **Never update order status to `paid` based on a frontend redirect or callback.** Only the server-side webhook (with signature verification) may set `status: 'paid'`. This prevents fraudulent order confirmations.
@@ -67,7 +86,7 @@ One Israeli payment gateway must be chosen before implementing the checkout flow
 | Password reset requested | Reset link (time-limited, 1 hour) | Not built |
 | Gift card purchased | Gift card code sent to recipient email + personal message | Not built |
 
-There is no payment webhook yet (§14.1/§14.2 provider not chosen), so today the `paid`/`shipped` triggers fire from the admin order-status endpoint (`PUT /api/admin/orders/:id/status`, see `07-api-endpoints.md`). `handleOrderPaid`/`handleOrderShipped` are written as standalone functions specifically so that once a payment webhook is built, it can call `handleOrderPaid(order)` directly instead of duplicating this logic.
+`handleOrderPaid(order)` is called by the Nedarim Plus webhook (`POST /api/payments/webhook`, §14.2) once a payment is verified — the admin endpoint refuses to set `paid`. The recipient is `order.user.email`, falling back to `order.shipping.email` for guest orders.
 
 ### Email Template Requirements
 - RTL layout (`direction: rtl; text-align: right`) — implemented inline in `emailLayout()` since email clients don't load external stylesheets or resolve CSS custom properties (`var(--token)`); colours are hardcoded to match the design tokens instead.
@@ -83,7 +102,7 @@ There is no payment webhook yet (§14.1/§14.2 provider not chosen), so today th
 ### Flow (as implemented)
 
 ```
-Admin marks order 'paid' (PUT /api/admin/orders/:id/status)
+Verified Nedarim Plus webhook marks order 'paid' (POST /api/payments/webhook)
   → handleOrderPaid() in services/orderFulfillment.js
   → createInvoiceForOrder() authenticates against Green Invoice (POST /account/token,
     cached ~23h) and creates a document (POST /documents) with:
@@ -99,7 +118,7 @@ Admin marks order 'paid' (PUT /api/admin/orders/:id/status)
 
 If `GREEN_INVOICE_API_KEY`/`SECRET` aren't set, invoice creation is skipped (logged warning) rather than blocking the order status update or confirmation email — this keeps `paid`/`shipped` transitions usable in dev without live credentials.
 
-Once a real payment webhook is built (§14.1/§14.2, provider still undecided), it should call `handleOrderPaid(order)` directly instead of going through the admin endpoint.
+The Nedarim Plus webhook (§14.2) calls `handleOrderPaid(order)` directly. The Green Invoice payment line still uses `type: 1` (other); switching it to credit card (`type: 3`, with `order.payment.cardLastDigits` / `installments`) is a follow-up once the live Green Invoice account is checked.
 
 ### Remaining Open Questions for Invoicing
 - Is the business registered for VAT (עוסק מורשה) or exempt (עוסק פטור)? Controls `GREEN_INVOICE_VAT_TYPE` (`0` = included/calculated, `2` = exempt) — currently defaults to `0`.

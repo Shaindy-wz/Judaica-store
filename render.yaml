@@ -48,3 +48,17 @@ services:
         sync: false
       - key: GREEN_INVOICE_VAT_TYPE
         sync: false
+      - key: NEDARIM_MOSAD_ID
+        sync: false
+      - key: NEDARIM_API_VALID
+        sync: false
+      - key: NEDARIM_API_PASSWORD
+        sync: false
+      - key: NEDARIM_WEBHOOK_SECRET
+        sync: false
+      - key: NEDARIM_MAX_INSTALLMENTS
+        sync: false
+      - key: NEDARIM_GROUPE
+        sync: false
+      - key: PUBLIC_URL
+        sync: false

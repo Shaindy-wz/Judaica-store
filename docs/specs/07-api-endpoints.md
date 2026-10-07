@@ -170,11 +170,15 @@ external uptime ping that keeps a free-plan instance warm.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| POST | `/api/payments/create-session` | Create a payment session with the chosen provider; returns URL/token for the iframe |
-| POST | `/api/payments/webhook` | **Webhook** — called by the payment provider when payment is confirmed; updates order status to `paid`; triggers invoice creation and confirmation email |
+| GET | `/api/payments/config` | `{ provider: 'nedarim' \| 'mock' \| null, maxInstallments }` — which checkout flow to render |
+| POST | `/api/payments/create-session` | Optional auth. Body `{ items, shippingAddress: { name, phone, email, address, city, zipCode }, couponCode, installments }` creates a `pending` order and a Nedarim transaction; or `{ orderId, clientToken, installments }` creates a fresh transaction for the same pending order (after a decline). Returns `{ orderId, clientToken, transactionId, iframeUrl, total }`. 409 `{ outOfStock[] }` on stock errors, 502 if Nedarim is unreachable, 503 if not configured |
+| GET | `/api/payments/:orderId/status?token=` | `{ status, paid }` — polled by the checkout; `token` is the `clientToken` from create-session |
+| POST | `/api/payments/webhook?order=&sig=` | **Nedarim Plus CallBack** (JSON, form or text/plain). Verifies the HMAC `sig`, then data + sender IP (see `11-payments-and-invoicing.md` §14.2); sets `paid`, decrements stock, increments coupon usage, triggers invoice + confirmation email |
+
+`POST /api/orders/mock-pay` is development-only: 404 in production or once Nedarim is configured.
 
 ### Critical webhook security note
-- The webhook endpoint must validate the request signature / HMAC provided by the payment provider before processing.
+- Nedarim Plus does not sign CallBacks, so the CallBack URL itself carries an HMAC-SHA256 of the order id (sent to Nedarim server-to-server, never to the browser). Invalid signature → 403.
 - **Never** update order status to `paid` based on a frontend callback — only via the verified webhook.
 
 ---

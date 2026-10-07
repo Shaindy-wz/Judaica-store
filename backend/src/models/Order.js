@@ -31,9 +31,22 @@ const OrderSchema = new Schema(
       address: String,
       city: String,
       zipCode: String,
+      // Lets guests (no User document) receive the confirmation email.
+      email: String,
     },
     trackingNumber: String,
-    payment: { method: String, transactionId: String },
+    payment: {
+      method: String,                 // 'nedarim' | 'mock'
+      transactionId: String,          // provider's transaction id, set by the verified webhook
+      providerSessionId: String,      // Nedarim CreateTransaction "ID" handed to the iframe
+      confirmation: String,           // card company authorisation number (מספר אישור)
+      cardLastDigits: String,
+      installments: Number,
+      paidAt: Date,
+      lastError: String,              // last decline message, for the admin order view
+      // Lets a guest poll their own order's payment status. Never returned by default.
+      clientToken: { type: String, select: false },
+    },
     invoiceNumber: String,
     invoiceUrl: String,
   },

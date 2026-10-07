@@ -262,13 +262,21 @@ const OrderSchema = new Schema({
     address: String,
     city:    String,
     zipCode: String,
+    email:   String,                          // confirmation/invoice recipient (needed for guests)
   },
 
   trackingNumber: String,                     // NEW — set by admin when shipped
 
   payment: {
-    method:        String,                    // e.g. 'cardcom', 'payplus'
-    transactionId: String,
+    method:            String,                // 'nedarim' | 'mock'
+    transactionId:     String,                // Nedarim transaction id, set by the verified webhook
+    providerSessionId: String,                // CreateTransaction ID handed to the iframe
+    confirmation:      String,                // card company authorisation number
+    cardLastDigits:    String,
+    installments:      Number,
+    paidAt:            Date,
+    lastError:         String,                // last decline message (admin view)
+    clientToken:       { type: String, select: false }, // lets a guest poll payment status
   },
 
   invoiceNumber:  String,                     // NEW — assigned by invoicing service

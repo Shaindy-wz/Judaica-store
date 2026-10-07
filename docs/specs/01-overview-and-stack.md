@@ -69,7 +69,7 @@ This spec describes a full-stack Hebrew e-commerce store. The frontend (componen
 | Backend | Node.js + Express | Confirmed |
 | DB | MongoDB + Mongoose | Confirmed |
 | Auth | JWT (basic) + JWT with role field (extended) | **Decision pending** — see §15 |
-| **Payments** | **Cardcom / PayPlus / Tranzila / Meshulam** (choose one — see §14) | **Requires "choose provider" decision** |
+| **Payments** | **Nedarim Plus** — PCI iframe + server-created transaction + signed CallBack webhook (see §14) | Confirmed — implemented via `services/nedarimService.js` |
 | **Invoice service** | **Green Invoice (API)** | Confirmed — implemented via `services/greenInvoiceService.js`; VAT registration status still pending confirmation with accountant |
 | **Image hosting** | AWS S3 / Cloudinary (store images outside app server) | **Required** |
 | **Email service** | `nodemailer` over generic SMTP (works with Resend / SendGrid / Brevo's SMTP relay, or any SMTP provider — just swap `.env` credentials) | Confirmed — implemented via `services/emailService.js` |

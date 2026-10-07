@@ -232,3 +232,91 @@
   padding-top: 10px;
   margin-top: 4px;
 }
+
+/* Payment step */
+.mainColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.fieldset:disabled {
+  opacity: 0.7;
+}
+
+.field select {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+  background: var(--color-white);
+  color: var(--color-text-primary);
+}
+
+.configState {
+  margin: 0;
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* Result */
+.resultBox {
+  max-width: 560px;
+  margin: var(--space-7) auto;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.resultBox p {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.resultIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: var(--radius-full);
+  background: var(--color-success);
+  color: var(--color-white);
+  font-size: var(--text-2xl);
+}
+
+.resultTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  color: var(--color-navy);
+  margin: 0;
+}
+
+.resultHelp {
+  font-size: var(--text-sm);
+}
+
+.resultLink {
+  margin-top: var(--space-3);
+  color: var(--color-navy);
+  font-weight: 600;
+}

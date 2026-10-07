@@ -69,7 +69,7 @@
 │       │   │   └── CartSummary.jsx
 │       │   ├── checkout/                      ← NEW module
 │       │   │   ├── ShippingForm.jsx
-│       │   │   ├── PaymentFrame.jsx           ← iframe of payment provider
+│       │   │   ├── PaymentFrame.jsx           ← Nedarim Plus PCI iframe (postMessage bridge)
 │       │   │   ├── CancellationRightsNotice.jsx ← NEW (14-day consumer rights)
 │       │   │   └── OrderSummary.jsx
 │       │   ├── branches/                      ← NEW module
@@ -170,7 +170,7 @@
         │   ├── giftCards.js                   ← NEW
         │   ├── branches.js                    ← NEW
         │   ├── blog.js                        ← NEW
-        │   ├── payments.js                    ← NEW (webhook from payment provider)
+        │   ├── payments.js                    ← config, create-session, status, Nedarim webhook
         │   ├── invoices.js                    ← NEW (integration with invoicing service)
         │   └── admin/                         ← Admin-only routes, all behind adminOnly middleware
         │       ├── adminProducts.js

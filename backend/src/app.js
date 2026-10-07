@@ -14,6 +14,7 @@ import searchRouter from './routes/search.js';
 import reviewsRouter from './routes/reviews.js';
 import healthRouter from './routes/health.js';
 import imagesRouter from './routes/images.js';
+import paymentsRouter from './routes/payments.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -55,6 +56,7 @@ app.use('/api/admin', adminRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/images', imagesRouter);
+app.use('/api/payments', paymentsRouter);
 
 // Anything under /api that reached this point is a genuine 404 — answer with
 // JSON rather than falling through to the SPA shell below.

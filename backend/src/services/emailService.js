@@ -83,7 +83,7 @@ function renderShippingUpdateEmail(order) {
 
 export async function sendOrderConfirmationEmail(order) {
   await sendEmail({
-    to: order.user?.email,
+    to: order.user?.email || order.shipping?.email,
     subject: `אישור הזמנה #${order._id}`,
     html: renderOrderConfirmationEmail(order),
   });
@@ -91,7 +91,7 @@ export async function sendOrderConfirmationEmail(order) {
 
 export async function sendShippingUpdateEmail(order) {
   await sendEmail({
-    to: order.user?.email,
+    to: order.user?.email || order.shipping?.email,
     subject: `ההזמנה שלך נשלחה — #${order._id}`,
     html: renderShippingUpdateEmail(order),
   });

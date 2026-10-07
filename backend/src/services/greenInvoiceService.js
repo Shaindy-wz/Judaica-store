@@ -51,7 +51,7 @@ export async function createInvoiceForOrder(order) {
 
   const customerName =
     order.shipping?.name || `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim() || 'לקוח';
-  const customerEmail = order.user?.email;
+  const customerEmail = order.user?.email || order.shipping?.email;
 
   const income = order.items.map((item) => ({
     description: item.name,
