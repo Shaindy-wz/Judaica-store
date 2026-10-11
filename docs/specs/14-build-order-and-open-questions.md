@@ -68,5 +68,5 @@ The following questions need business decisions before the relevant parts of the
 | 7 | **Shipping providers** — who handles shipping? Costs? Thresholds for free shipping? | ShippingForm, CartSummary, PromoStrip copy |
 | 8 | **Gift cards** — digital only, or also physical cards that need to be shipped? | GiftCardPage flow, shipping integration |
 | 9 | **Additional language** — is there a requirement for English or any other language now or in the near future? | Routing, DB text fields, i18n architecture |
-| 10 | **Hosting preference** — is there an existing hosting provider, or shall we proceed with Vercel/Render/MongoDB Atlas as suggested in §3? | Infrastructure setup, deployment pipeline |
+| 10 | ~~**Hosting preference**~~ — **Resolved: one Render web service + MongoDB Atlas, on the domain talidika.co.il** (registered at box). See `01-overview-and-stack.md` §Deployment and §Custom domain. | Infrastructure setup, deployment pipeline |
 | 11 | **Timeline & budget constraint** — is there a target launch date? Does it affect prioritisation of phases 1–4 vs 5–7 (core store vs gift cards/blog/branches)? |

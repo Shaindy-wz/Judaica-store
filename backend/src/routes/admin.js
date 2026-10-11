@@ -56,7 +56,8 @@ router.put('/products/:id', updateProduct);
 router.delete('/products/:id', deleteProduct);
 
 // Image upload — stored in MongoDB (the host's disk does not survive restarts).
-// Returns an absolute URL because the site and the API are on different hosts.
+// The site and the API share one origin, so a root-relative URL keeps working
+// on whichever domain the store is served from.
 router.post('/upload', uploadSingle, async (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'לא נבחר קובץ' });
   const image = await Image.create({
@@ -65,7 +66,7 @@ router.post('/upload', uploadSingle, async (req, res) => {
     size: req.file.size,
     originalName: req.file.originalname,
   });
-  const url = `${req.protocol}://${req.get('host')}/api/images/${image._id}`;
+  const url = `/api/images/${image._id}`;
   res.status(201).json({ url });
 });
 

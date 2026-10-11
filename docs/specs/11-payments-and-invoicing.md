@@ -20,7 +20,7 @@ Implemented in `backend/src/services/nedarimService.js`, `controllers/paymentCon
 | `NEDARIM_MAX_INSTALLMENTS` | no | Max installments offered at checkout (1–36, default 1) |
 | `NEDARIM_GROUPE` | no | Category stamped on every store transaction in Nedarim reports |
 | `NEDARIM_CALLBACK_IPS` | no | Override the documented CallBack sender IPs |
-| `PUBLIC_URL` | no | Public base URL for the CallBack (defaults to the request host) |
+| `PUBLIC_URL` | no | The store's canonical address (`https://talidika.co.il`). Base URL for the CallBack (defaults to the request host); page requests on any other host are 301-redirected to it — see `01-overview-and-stack.md` §Custom domain |
 
 Until `NEDARIM_MOSAD_ID` + `NEDARIM_API_VALID` are set, production checkout shows "payment unavailable"; development falls back to `POST /api/orders/mock-pay` (which returns 404 in production or once Nedarim is configured).
 

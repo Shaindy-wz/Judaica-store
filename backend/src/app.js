@@ -31,6 +31,19 @@ const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+// Once the store has its own domain, PUBLIC_URL names it. Pages opened on any
+// other host (the *.onrender.com address) are sent there, so customers, search
+// engines and the login cookie all end up on one address. /api is left alone:
+// the host's health check and in-flight payment callbacks still use it.
+const canonicalUrl = process.env.PUBLIC_URL ? new URL(process.env.PUBLIC_URL) : null;
+
+app.use((req, res, next) => {
+  if (!canonicalUrl || req.hostname === canonicalUrl.hostname) return next();
+  if (req.hostname === 'localhost' || req.path.startsWith('/api')) return next();
+  if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+  return res.redirect(301, `${canonicalUrl.origin}${req.originalUrl}`);
+});
+
 app.use(cors({
   origin(origin, callback) {
     // No origin header = same-origin request or a server-to-server call.

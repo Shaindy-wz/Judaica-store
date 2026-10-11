@@ -98,13 +98,34 @@ production.
 
 `backend/src/app.js` resolves each request in this order:
 
-1. `/api/health` — mounted first, touches no database
-2. `/uploads/*` — legacy files on disk (new uploads are stored in MongoDB and served from `/api/images/:id`)
-3. `/api/*` — the routers; anything unmatched returns a **JSON** 404
-4. static files from `frontend/dist` — hashed files under `/assets` are served
+1. canonical-host redirect — when `PUBLIC_URL` is set, a page `GET`/`HEAD` on any
+   other host (the `*.onrender.com` address) gets a 301 to the same path on
+   `PUBLIC_URL`. `/api/*` and `localhost` are exempt, so the health check and
+   payment callbacks are never redirected
+2. `/api/health` — mounted first among the routers, touches no database
+3. `/uploads/*` — legacy files on disk (new uploads are stored in MongoDB and served from `/api/images/:id`)
+4. `/api/*` — the routers; anything unmatched returns a **JSON** 404
+5. static files from `frontend/dist` — hashed files under `/assets` are served
    with `Cache-Control: immutable` for a year; `index.html` is always `no-cache`
-5. any remaining `GET` — returns `index.html` so React Router can resolve the
+6. any remaining `GET` — returns `index.html` so React Router can resolve the
    path client-side (this is what keeps a deep link working on refresh)
+
+### Custom domain
+
+The store's domain is **talidika.co.il**, registered at box (Gorny Interactive)
+on 2026-07-01 for one year — renew before 2027-07-01. DNS is managed in the box
+control panel and points at Render:
+
+| Type | Name | Value |
+|---|---|---|
+| A | `@` | `216.24.57.1` (Render's load balancer — confirm against the value Render shows) |
+| CNAME | `www` | the service's `*.onrender.com` host |
+
+No AAAA record may exist on either name. The domain is added under the Render
+service's Settings → Custom Domains; Render adds `www` itself, redirects it to
+the apex and issues the TLS certificate. Production env vars for the domain:
+`PUBLIC_URL=https://talidika.co.il` and
+`FRONTEND_URL=https://talidika.co.il,https://www.talidika.co.il`.
 
 ### Startup and health
 
@@ -147,7 +168,8 @@ secret is ever committed.
 |---|---|
 | `MONGODB_URI` | the Atlas SRV string |
 | `NODE_ENV` | `production` |
-| `FRONTEND_URL` | the deployed origin — accepts a comma-separated list |
+| `FRONTEND_URL` | `https://talidika.co.il,https://www.talidika.co.il` — accepts a comma-separated list |
+| `PUBLIC_URL` | `https://talidika.co.il` — the canonical address (see §Custom domain) |
 | `PORT` | **do not set**; Render injects it |
 
 `JWT_SECRET`, the `SMTP_*` block and the `GREEN_INVOICE_*` block carry the same

@@ -60,7 +60,7 @@ The form must support all fields in the Product model (§9):
 
 ### ImageUploader Component (`admin/components/ImageUploader.jsx`)
 - Drag-and-drop file upload
-- Uploads via `POST /api/admin/upload` (through `services/api.js`, so the auth cookie and `VITE_API_URL` are used); the server stores the image in MongoDB and returns an absolute URL
+- Uploads via `POST /api/admin/upload` (through `services/api.js`, so the auth cookie and `VITE_API_URL` are used); the server stores the image in MongoDB and returns a root-relative URL (`/api/images/:id`)
 - Shows upload progress and thumbnails
 - Supports reordering images (first image = main product image)
 
