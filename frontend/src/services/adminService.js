@@ -1,4 +1,5 @@
 import api from './api.js';
+import { compressImage } from '../utils/compressImage.js';
 
 // Dashboard
 export const getDashboard = () => api.get('/admin/dashboard');
@@ -14,11 +15,11 @@ export const deleteProduct = (id) => api.delete(`/admin/products/${id}`);
 
 export async function uploadImageToCloudinary(file) {
   const formData = new FormData();
-  formData.append('file', file);
+  formData.append('file', await compressImage(file));
 
   const data = await api.upload('/admin/upload', formData);
   if (!data?.url) throw new Error('העלאת התמונה נכשלה');
-  return data.url; // e.g. /uploads/products/filename.jpg
+  return data.url; // e.g. /api/images/<id>
 }
 
 // Orders

@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
+import PageLoader from '../ui/PageLoader';
 import Header from './Header';
 import Footer from './Footer';
 import WhatsAppButton from '../ui/WhatsAppButton';
@@ -23,7 +24,10 @@ export default function Layout() {
     <>
       <Header />
       <main>
-        <Outlet />
+        {/* Keeps the header and footer on screen while a lazy page loads. */}
+        <Suspense fallback={<PageLoader />}>
+          <Outlet />
+        </Suspense>
       </main>
       <Footer />
       <WhatsAppButton />

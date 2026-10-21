@@ -104,7 +104,7 @@ Uploaded product images. Stored in MongoDB because the host's disk is wiped on e
 const ImageSchema = new Schema({
   data:         { type: Buffer, required: true },
   contentType:  { type: String, required: true },   // e.g. image/jpeg
-  size:         { type: Number, required: true },   // bytes, max 5MB
+  size:         { type: Number, required: true },   // bytes, max 12MB (usually a few hundred KB — resized client-side)
   originalName: String,
 }, { timestamps: true });
 ```

@@ -10,16 +10,18 @@ export default function ImageUploader({ images = [], onChange }) {
   async function handleFiles(files) {
     setError('');
     setUploading(true);
-    try {
-      const urls = await Promise.all(
-        Array.from(files).map((f) => uploadImageToCloudinary(f))
-      );
-      onChange([...images, ...urls]);
-    } catch (e) {
-      setError(e.message || 'שגיאה בהעלאת תמונה');
-    } finally {
-      setUploading(false);
+    // One bad file must not discard the ones that did upload.
+    const results = await Promise.allSettled(
+      Array.from(files).map((f) => uploadImageToCloudinary(f))
+    );
+    const urls = results.filter((r) => r.status === 'fulfilled').map((r) => r.value);
+    const failures = results.filter((r) => r.status === 'rejected');
+    if (urls.length) onChange([...images, ...urls]);
+    if (failures.length) {
+      setError(failures.map((r) => r.reason?.message || 'שגיאה בהעלאת תמונה').join(' | '));
     }
+    setUploading(false);
+    if (inputRef.current) inputRef.current.value = ''; // allow re-picking the same file
   }
 
   function handleDrop(e) {

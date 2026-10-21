@@ -61,6 +61,8 @@ The form must support all fields in the Product model (§9):
 ### ImageUploader Component (`admin/components/ImageUploader.jsx`)
 - Drag-and-drop file upload
 - Uploads via `POST /api/admin/upload` (through `services/api.js`, so the auth cookie and `VITE_API_URL` are used); the server stores the image in MongoDB and returns a root-relative URL (`/api/images/:id`)
+- Resizes each photo in the browser first (`utils/compressImage.js`: longest side ≤1600px, JPEG 85%); HEIC files the browser cannot decode get a clear error asking for JPG
+- One failed file does not discard the others that uploaded
 - Shows upload progress and thumbnails
 - Supports reordering images (first image = main product image)
 

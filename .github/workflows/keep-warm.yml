@@ -1,0 +1,32 @@
+# Render's free plan stops the service after 15 minutes without traffic and the
+# next visitor waits ~50s for it to boot. Pinging the DB-free health endpoint
+# every 10 minutes keeps it awake. (A paid Render instance never sleeps — once
+# the store moves to one, this workflow can be deleted.)
+#
+# Set the repository variable HEALTH_URL (Settings → Secrets and variables →
+# Actions → Variables) to the exact URL if the defaults below are wrong.
+name: Keep site awake
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Ping /api/health
+        env:
+          HEALTH_URL: ${{ vars.HEALTH_URL }}
+        run: |
+          # /api is never redirected, so both the custom domain and the
+          # onrender.com address work; the first one that answers is enough.
+          for url in $HEALTH_URL https://talidika.co.il/api/health https://judaica-store.onrender.com/api/health; do
+            if curl -fsS --max-time 90 "$url"; then
+              echo; echo "OK: $url"; exit 0
+            fi
+            echo "No answer from $url"
+          done
+          echo "::warning::No health URL answered — set the HEALTH_URL repository variable."

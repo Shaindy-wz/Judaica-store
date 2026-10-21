@@ -144,9 +144,23 @@ instead of hanging.
 ### Cold starts on the free plan
 
 Render's free plan stops the service after 15 minutes without traffic, and the
-next visitor waits ~50s for it to boot. Either move to a paid instance, or ping
-`/api/health` every ~10 minutes from an external uptime checker — the endpoint
-is cheap by design.
+next visitor waits ~50s for it to boot. The GitHub Actions workflow
+`.github/workflows/keep-warm.yml` pings `/api/health` every 10 minutes (it tries
+the `HEALTH_URL` repository variable, then `talidika.co.il`, then the default
+`judaica-store.onrender.com` address). GitHub may delay scheduled runs, so a
+paid Render instance — which never sleeps — remains the reliable fix; delete the
+workflow after upgrading.
+
+### Performance
+
+- `compression` gzips every text response (bundle, CSS, JSON).
+- `App.jsx` keeps only the storefront pages (Home, Shop, Category, Product,
+  Search, Cart) in the main bundle; the admin panel, checkout, account and
+  content pages are `React.lazy` chunks, shown behind `PageLoader` while loading.
+- Google Fonts load from `index.html` with `preconnect`, not via a CSS `@import`.
+- Product photos are resized in the browser to at most 1600px / JPEG 85% before
+  upload (`utils/compressImage.js`), and `GET /api/images/:id` keeps up to 64MB
+  of recently served images in memory.
 
 ### Creating or resetting the admin user
 

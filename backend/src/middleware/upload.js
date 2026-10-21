@@ -1,6 +1,9 @@
 import multer from 'multer';
 
-const MAX_SIZE_MB = 5;
+// The admin page shrinks photos before sending them; this ceiling only matters
+// when the browser could not (an unusual format), so it allows a full-size
+// phone photo while staying well under MongoDB's 16MB document limit.
+const MAX_SIZE_MB = 12;
 
 const fileFilter = (_req, file, cb) => {
   if (file.mimetype.startsWith('image/')) cb(null, true);

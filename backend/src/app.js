@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import fs from 'fs';
 import path from 'path';
@@ -44,13 +45,21 @@ app.use((req, res, next) => {
   return res.redirect(301, `${canonicalUrl.origin}${req.originalUrl}`);
 });
 
-app.use(cors({
-  origin(origin, callback) {
-    // No origin header = same-origin request or a server-to-server call.
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error(`Origin ${origin} is not allowed by CORS`));
-  },
-  credentials: true,
+// gzip every text response (JS bundle, CSS, JSON) — roughly a 70% cut in bytes.
+// Images are already compressed, so the filter skips them.
+app.use(compression());
+
+// Browsers send an Origin header even on same-origin POSTs, so the store's own
+// pages are always allowed — whatever domain it is reached on — and an
+// incomplete FRONTEND_URL can no longer break logins and image uploads.
+app.use(cors((req, callback) => {
+  const origin = req.get('origin');
+  const sameOrigin = origin === `${req.protocol}://${req.get('host')}`;
+  const allowed = !origin || sameOrigin || allowedOrigins.includes(origin);
+  callback(allowed ? null : new Error(`Origin ${origin} is not allowed by CORS`), {
+    origin: allowed,
+    credentials: true,
+  });
 }));
 app.use(cookieParser());
 app.use(express.json());

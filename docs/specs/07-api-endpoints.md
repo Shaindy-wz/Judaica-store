@@ -206,7 +206,7 @@ external uptime ping that keeps a free-plan instance warm.
 | POST | `/api/admin/products` | Create new product |
 | PUT | `/api/admin/products/:id` | Update product |
 | DELETE | `/api/admin/products/:id` | Delete product |
-| POST | `/api/admin/upload` | Upload one product image (multipart field `file`, image/*, max 5MB). Stored in MongoDB (`Image`); returns `201 { url }` with a root-relative URL (`/api/images/:id`), so it survives a domain change. Images uploaded before this change keep their absolute `*.onrender.com` URL, which still resolves |
+| POST | `/api/admin/upload` | Upload one product image (multipart field `file`, image/*, max 12MB — the admin page resizes photos to ≤1600px JPEG before sending). Stored in MongoDB (`Image`); returns `201 { url }` with a root-relative URL (`/api/images/:id`), so it survives a domain change. Images uploaded before this change keep their absolute `*.onrender.com` URL, which still resolves |
 | GET | `/api/admin/orders` | All orders, filterable by status |
 | PUT | `/api/admin/orders/:id/status` | Update order status + tracking number |
 | POST | `/api/admin/coupons` | Create coupon |
