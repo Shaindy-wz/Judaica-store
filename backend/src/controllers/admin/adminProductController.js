@@ -15,7 +15,7 @@ function buildSearchTokens(name) {
   return [name, normalized].filter(Boolean);
 }
 
-function toSlug(str) {
+export function toSlug(str) {
   return str
     .normalize('NFKD')
     .replace(/[֑-ׇ]/g, '')
@@ -26,7 +26,7 @@ function toSlug(str) {
     .slice(0, 80);
 }
 
-async function uniqueSlug(base, excludeId = null) {
+export async function uniqueSlug(base, excludeId = null) {
   let slug = base;
   let n = 1;
   while (true) {

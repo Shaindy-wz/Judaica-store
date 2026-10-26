@@ -1,0 +1,126 @@
+.panel {
+  background: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+  margin-bottom: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.head { display: flex; justify-content: space-between; align-items: center; }
+.title { font-family: var(--font-display); font-size: var(--text-lg); color: var(--color-navy); margin: 0; }
+
+.close {
+  background: none;
+  border: none;
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+}
+.close:hover { color: var(--color-navy); }
+
+.help {
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+.help summary { cursor: pointer; font-weight: 600; color: var(--color-navy); }
+.help ul { margin: var(--space-3) 0 0; padding-inline-start: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
+
+.link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-navy);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.pickRow { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.fileName { font-size: var(--text-sm); color: var(--color-text-secondary); }
+
+/* Visually hidden but still focusable, so the file picker works from the keyboard. */
+.hiddenInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.primary,
+.secondary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: box-shadow var(--transition), opacity var(--transition);
+}
+.primary { background: var(--gradient-navy); color: var(--color-white); border: none; }
+.primary:hover:not(:disabled) { box-shadow: var(--shadow-hover); }
+.primary:disabled { opacity: 0.5; cursor: default; }
+.secondary { background: var(--color-white); color: var(--color-navy); border: 1px solid var(--color-border); }
+.primary:focus-visible,
+.secondary:focus-visible,
+.close:focus-visible,
+.link:focus-visible,
+.primary:focus-within { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+
+.status { color: var(--color-text-secondary); font-size: var(--text-sm); margin: 0; }
+.error { color: var(--color-error); font-weight: 600; font-size: var(--text-sm); margin: 0; }
+
+.review { display: flex; flex-direction: column; gap: var(--space-3); }
+.summary { margin: 0; font-size: var(--text-base); }
+.errorCount { color: var(--color-error); }
+
+.warning,
+.warningList {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+.warningList { padding-inline-start: var(--space-5); }
+
+.errorBox {
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  max-height: 320px;
+  overflow-y: auto;
+}
+.errorBox p { margin: 0 0 var(--space-2); font-weight: 600; color: var(--color-error); }
+
+.preview summary { cursor: pointer; font-weight: 600; color: var(--color-navy); font-size: var(--text-sm); }
+.preview .table { margin-top: var(--space-2); }
+.preview { max-height: 360px; overflow-y: auto; }
+
+.table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.table th,
+.table td {
+  text-align: start;
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--color-border-light);
+  vertical-align: top;
+}
+.table th { color: var(--color-text-secondary); font-weight: 600; }
+.errorBox .table td:first-child { white-space: nowrap; }
+
+.actions { display: flex; gap: var(--space-3); }
+
+.success { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); color: var(--color-success); font-weight: 600; }
+.success p { margin: 0; }

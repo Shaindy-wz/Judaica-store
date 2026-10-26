@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import express, { Router } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { requireAuth, adminOnly } from '../middleware/auth.js';
@@ -12,6 +12,7 @@ import {
   deleteProduct,
   getUploadSignature,
 } from '../controllers/admin/adminProductController.js';
+import { importProducts } from '../controllers/admin/adminProductImportController.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 import {
@@ -51,6 +52,7 @@ router.get('/dashboard', getDashboard);
 
 // Products
 router.get('/products', listProducts);
+router.post('/products/import', express.json({ limit: '10mb' }), importProducts);
 router.post('/products', createProduct);
 router.put('/products/:id', updateProduct);
 router.delete('/products/:id', deleteProduct);

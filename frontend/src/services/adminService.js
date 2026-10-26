@@ -12,6 +12,9 @@ export const getAdminProducts = (params = {}) => {
 export const createProduct = (data) => api.post('/admin/products', data);
 export const updateProduct = (id, data) => api.put(`/admin/products/${id}`, data);
 export const deleteProduct = (id) => api.delete(`/admin/products/${id}`);
+// dryRun: true validates and previews without saving; on a 400 the thrown
+// error carries the server's `errors` / `summary` fields.
+export const importProducts = (rows, dryRun) => api.post('/admin/products/import', { rows, dryRun });
 
 export async function uploadImageToCloudinary(file) {
   const formData = new FormData();

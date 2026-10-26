@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { getAdminProducts, deleteProduct } from '../../services/adminService';
+import { getAdminProducts, deleteProduct, getAdminCategories } from '../../services/adminService';
+import { downloadTemplate, downloadProducts } from '../../utils/productSheet';
 import { formatPrice } from '../../utils/formatPrice';
 import AdminTable from '../components/AdminTable';
+import ProductImportPanel from '../components/ProductImportPanel';
 import styles from './AdminProductsPage.module.css';
 
 export default function AdminProductsPage() {
@@ -11,6 +13,8 @@ export default function AdminProductsPage() {
   const [q, setQ] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showImport, setShowImport] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -21,6 +25,22 @@ export default function AdminProductsPage() {
   }, [page, q]);
 
   useEffect(() => { load(); }, [load]);
+
+  async function handleExport() {
+    setExporting(true);
+    setError('');
+    try {
+      const [{ items }, categories] = await Promise.all([
+        getAdminProducts({ limit: 100000 }),
+        getAdminCategories(),
+      ]);
+      downloadProducts(items, categories);
+    } catch (e) {
+      setError(e.message || 'הייצוא נכשל');
+    } finally {
+      setExporting(false);
+    }
+  }
 
   async function handleDelete(id, name) {
     if (!window.confirm(`למחוק את המוצר "${name}"?`)) return;
@@ -72,10 +92,30 @@ export default function AdminProductsPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>מוצרים</h1>
-        <Link to="/admin/products/new" className={styles.addBtn}>
-          + מוצר חדש
-        </Link>
+        <div className={styles.headerActions}>
+          <button type="button" className={styles.toolBtn} onClick={downloadTemplate}>
+            הורדת תבנית
+          </button>
+          <button type="button" className={styles.toolBtn} onClick={handleExport} disabled={exporting}>
+            {exporting ? 'מייצא...' : 'ייצוא לקובץ'}
+          </button>
+          <button
+            type="button"
+            className={styles.toolBtn}
+            onClick={() => setShowImport(true)}
+            aria-expanded={showImport}
+          >
+            ייבוא מקובץ
+          </button>
+          <Link to="/admin/products/new" className={styles.addBtn}>
+            + מוצר חדש
+          </Link>
+        </div>
       </div>
+
+      {showImport && (
+        <ProductImportPanel onClose={() => setShowImport(false)} onImported={load} />
+      )}
 
       <div className={styles.filters}>
         <input

@@ -36,6 +36,15 @@ Displays summary statistics and quick-action links:
 - Search/filter by name, category, tag
 - Bulk actions: mark as featured, mark out of stock, delete
 
+### Product import/export (Hebrew spec §22.1 — "ייבוא/ייצוא CSV בכמות")
+Toolbar on the product list: **הורדת תבנית**, **ייצוא לקובץ**, **ייבוא מקובץ** (`admin/components/ProductImportPanel.jsx`).
+
+- **Format** (`frontend/src/utils/productSheet.js` is the single source of the columns): Hebrew headers, one row per product, or one row per option combination for a variant product (same name on every row; `אפשרות N - שם` / `אפשרות N - ערך` for up to 3 option dimensions; each row has its own price / SKU / stock). Shared product fields may sit on any of the product's rows. Category is the category name, or `הורה > תת` when a name exists under two parents. Yes/no cells take `כן`/`לא`. Images are full URLs separated by spaces
+- **Files**: `.xlsx`, or `.csv` in UTF-8 or Windows-1255 (Excel's plain CSV), delimited by `,` `;` or tab. Export and template are UTF-8 CSV with a BOM so Excel shows Hebrew correctly; an export can be edited and re-imported unchanged
+- **Flow**: the browser reads the file and posts the rows to `POST /api/admin/products/import` with `dryRun: true` → preview (new / updated counts, per-row Hebrew errors with spreadsheet row numbers) → **אישור וייבוא** posts again with `dryRun: false`. Any error blocks the whole file — nothing is written
+- **Matching**: an existing product is updated when its name matches, or (simple products) its SKU. Empty cells leave stored values unchanged. Rows of a product that has variants must include the option columns, so an import can never silently delete variants
+- Rows whose name starts with `דוגמה` (the template's examples) are skipped with a warning
+
 ### Product Create/Edit Form (`AdminProductFormPage.jsx`)
 The form must support all fields in the Product model (§9):
 

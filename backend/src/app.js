@@ -62,7 +62,11 @@ app.use(cors((req, callback) => {
   });
 }));
 app.use(cookieParser());
-app.use(express.json());
+// A product import posts a whole spreadsheet, far past the 100kb default. The
+// global parser skips that route; it parses its own body once the admin check
+// has passed (routes/admin.js), so anonymous requests never get the big limit.
+const jsonBody = express.json();
+app.use((req, res, next) => (req.path === '/api/admin/products/import' ? next() : jsonBody(req, res, next)));
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // Mounted first and DB-free so the host's health check answers instantly, even
