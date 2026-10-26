@@ -10,7 +10,7 @@ export default function ProductImportPanel({ onClose, onImported }) {
   const [stage, setStage] = useState('pick'); // pick | checking | review | saving | done
   const [fileName, setFileName] = useState('');
   const [rows, setRows] = useState([]);
-  const [unknownHeaders, setUnknownHeaders] = useState([]);
+  const [sheet, setSheet] = useState(null);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const inputRef = useRef(null);
@@ -22,10 +22,10 @@ export default function ProductImportPanel({ onClose, onImported }) {
     setFileName(file.name);
     setStage('checking');
     try {
-      const sheet = await readProductSheet(file);
-      setRows(sheet.rows);
-      setUnknownHeaders(sheet.unknownHeaders);
-      setResult(await importProducts(sheet.rows, true));
+      const read = await readProductSheet(file);
+      setRows(read.rows);
+      setSheet(read);
+      setResult(await importProducts(read.rows, true));
       setStage('review');
     } catch (e) {
       setError(e.message || 'קריאת הקובץ נכשלה');
@@ -50,8 +50,10 @@ export default function ProductImportPanel({ onClose, onImported }) {
     }
   }
 
-  const errors = result?.errors ?? [];
-  const warnings = result?.warnings ?? [];
+  // Layout problems found while reading the file come first, then the server's checks.
+  const errors = [...(sheet?.errors ?? []), ...(result?.errors ?? [])];
+  const warnings = [...(sheet?.warnings ?? []), ...(result?.warnings ?? [])];
+  const unknownHeaders = sheet?.unknownHeaders ?? [];
   const summary = result?.summary;
 
   return (
@@ -73,14 +75,13 @@ export default function ProductImportPanel({ onClose, onImported }) {
           <details className={styles.help}>
             <summary>איך ממלאים את הקובץ?</summary>
             <ul>
-              <li>מתחילים מ<button type="button" className={styles.link} onClick={downloadTemplate}>קובץ התבנית</button> (נפתח ב-Excel). שורות שהשם שלהן מתחיל ב"דוגמה" לא ייובאו.</li>
-              <li>שורה אחת לכל מוצר. חובה: שם מוצר ומחיר.</li>
-              <li>מוצר עם מידות/צבעים: שורה לכל שילוב, עם אותו שם מוצר בכל השורות, ובכל שורה שם האפשרות (למשל "מידה") והערך (למשל "50"), מחיר, מק"ט ומלאי משלה.</li>
-              <li>מוצר שכבר קיים באתר (לפי השם, או לפי המק"ט) יעודכן. תא ריק לא משנה את מה שכבר שמור.</li>
+              <li>מתחילים מ<button type="button" className={styles.link} onClick={downloadTemplate}>קובץ התבנית</button>, או מקובץ "ייצוא לקובץ" של המוצרים הקיימים. מוצרים ששמם מתחיל ב"דוגמה" לא ייובאו.</li>
+              <li>גיליון "מלאי ומוצרים": שורה לכל מוצר — שם, קטגוריה, מחיר לצרכן, ומחיר מבצע אם יש. מחיר מבצע ריק מבטל מבצע קיים.</li>
+              <li>גיליון "מוצרים": שורה לכל צבע/מידה של מוצר, עם אותו שם מוצר, ומק"ט ומחיר משלה. מחיר ריק = המחיר מהגיליון "מלאי ומוצרים". מוצר בלי צבעים ומידות לא צריך שורה כאן.</li>
+              <li>אפשרויות בתשלום (למשל "רקמת שם"): בעמודה "אפשרויות", והמחיר הנוסף בעמודה "מחיר תוספת". כמה אפשרויות — מפרידים בפסיק, באותו סדר בשתי העמודות. באתר הלקוח יבחר כן/לא והמחיר יתעדכן.</li>
               <li>קטגוריה: השם כפי שמופיע בעמוד הקטגוריות. לתת-קטגוריה אפשר לכתוב "טליתות &gt; ילדים".</li>
-              <li>כן/לא: בעמודות במלאי, מומלץ, ניתן להחזרה ומותאם אישית.</li>
-              <li>תמונות: קישורים מלאים מופרדים ברווח. אפשר גם לייבא בלי תמונות ולהעלות אותן אחר כך בעריכת המוצר.</li>
-              <li>אפשר לשמור את הקובץ כ-Excel (.xlsx) או כ-CSV.</li>
+              <li>מוצר שכבר קיים באתר (לפי השם, או לפי המק"ט) יעודכן. תא ריק לא משנה את מה שכבר שמור, והמלאי של כל צבע/מידה נשמר.</li>
+              <li>תמונות ותיאור מוסיפים בעריכת המוצר באתר.</li>
             </ul>
           </details>
 
@@ -119,10 +120,10 @@ export default function ProductImportPanel({ onClose, onImported }) {
                 <div className={styles.errorBox}>
                   <p>יש לתקן את השגיאות בקובץ ולבחור אותו שוב. כל עוד יש שגיאות, לא יישמר דבר.</p>
                   <table className={styles.table}>
-                    <thead><tr><th scope="col">שורה</th><th scope="col">מה לתקן</th></tr></thead>
+                    <thead><tr><th scope="col">איפה</th><th scope="col">מה לתקן</th></tr></thead>
                     <tbody>
                       {errors.map((e, i) => (
-                        <tr key={i}><td>{e.row}</td><td>{e.message}</td></tr>
+                        <tr key={i}><td>{e.label ?? `שורה ${e.row}`}</td><td>{e.message}</td></tr>
                       ))}
                     </tbody>
                   </table>
@@ -131,7 +132,7 @@ export default function ProductImportPanel({ onClose, onImported }) {
 
               {warnings.length > 0 && (
                 <ul className={styles.warningList}>
-                  {warnings.map((w, i) => <li key={i}>שורה {w.row}: {w.message}</li>)}
+                  {warnings.map((w, i) => <li key={i}>{w.label ?? `שורה ${w.row}`}: {w.message}</li>)}
                 </ul>
               )}
 

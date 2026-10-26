@@ -34,7 +34,7 @@ export default function AdminProductsPage() {
         getAdminProducts({ limit: 100000 }),
         getAdminCategories(),
       ]);
-      downloadProducts(items, categories);
+      await downloadProducts(items, categories);
     } catch (e) {
       setError(e.message || 'הייצוא נכשל');
     } finally {

@@ -76,7 +76,7 @@ This spec describes a full-stack Hebrew e-commerce store. The frontend (componen
 | **Shabbat times** | Hebcal API (free tier) | **Required** |
 | **Analytics** | Google Analytics 4 + Meta Pixel | **Required** |
 | **Search** | MongoDB text index + Hebrew normalisation on server (no Elasticsearch initially) | **Required** |
-| Spreadsheet import | CSV parsed in-house (`utils/productSheet.js`); `.xlsx` via `read-excel-file`, lazy-loaded in the admin panel only | Confirmed — see `12-admin-panel.md` §Product import/export |
+| Spreadsheet import/export | `.xlsx` read with `read-excel-file` and written with `write-excel-file`; CSV parsed in-house (`utils/productSheet.js`). Both libraries are lazy-loaded in the admin panel only | Confirmed — see `12-admin-panel.md` §Product import/export |
 | Hosting | Single Render web service (Express serves the API **and** the built React app) · DB: MongoDB Atlas | Confirmed — see §Deployment |
 
 ---

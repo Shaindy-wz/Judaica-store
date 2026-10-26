@@ -73,7 +73,7 @@ const ProductSchema = new Schema({
 
 ### Derived / Computed Properties (not stored)
 - `hasVariants` → `variants.length > 1`
-- `priceRange` → `{ min, max }` computed from `variants` array min/max prices
+- `priceRange` → `{ min, max }` computed from `variants` min/max prices, ignoring paid add-on variants (a yes/no option `["לא", "כן"]` set to `כן` — see `12-admin-panel.md` §Product import/export)
 - `displayPrice` → `basePrice` if no variants; `min` of variant prices if variants exist
 
 ---

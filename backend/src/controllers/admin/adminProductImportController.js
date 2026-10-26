@@ -24,7 +24,13 @@ const SPEC_FIELDS = ['material', 'kashrut', 'hashgacha', 'tradition', 'craftsman
 
 const text = (value) => (value == null ? '' : String(value).trim());
 const key = (value) => text(value).replace(/\s+/g, ' ').toLowerCase();
-const listRows = (rows) => rows.map((r) => r.row).join(', ');
+// Rows may carry a display label ("מלאי ומוצרים, שורה 5") when the file has
+// several sheets; otherwise the spreadsheet row number is the label.
+const labelOf = (r) => r.label || `שורה ${r.row}`;
+const listRows = (rows) => rows.map(labelOf).join(', ');
+
+const comboKeyOf = (optionValues) =>
+  Object.entries(optionValues).map(([n, v]) => `${key(n)}=${key(v)}`).sort().join('|');
 
 function parseNumber(raw, label, { integer = false } = {}) {
   const cleaned = text(raw).replace(/[₪\s,]/g, '');
@@ -83,7 +89,8 @@ function buildCategoryLookup(categories) {
 // Validates one product (all its rows) and returns the fields to write.
 function buildProduct(rows, ctx) {
   const errors = [];
-  const fail = (row, message) => errors.push({ row, message });
+  const byRow = new Map(rows.map((r) => [r.row, r]));
+  const fail = (row, message) => errors.push({ row, label: labelOf(byRow.get(row) ?? { row }), message });
   const first = rows[0];
   const name = text(first.name).replace(/\s+/g, ' ');
   const fields = {};
@@ -136,6 +143,8 @@ function buildProduct(rows, ctx) {
   const originalPrice = parseNumber(firstFilled(rows, 'originalPrice'), 'מחיר לפני הנחה');
   if (originalPrice.error) fail(first.row, originalPrice.error);
   else if (originalPrice.value !== undefined) fields.originalPrice = originalPrice.value;
+  // A sheet with a sale-price column says "no sale" by leaving it empty.
+  else if (rows.some((r) => r.clearOriginalPrice) && existing) fields.originalPrice = undefined;
 
   for (const [field, label] of [['featured', 'מומלץ'], ['returnable', 'ניתן להחזרה'], ['customizable', 'מותאם אישית']]) {
     const parsed = parseBool(firstFilled(rows, field), label);
@@ -163,11 +172,16 @@ function buildProduct(rows, ctx) {
       fail(row, `המק"ט ${sku} כבר שייך למוצר "${owner.name}"`);
     }
     const seenAt = ctx.skusInFile.get(sku);
-    if (seenAt !== undefined && seenAt !== row) fail(row, `המק"ט ${sku} מופיע בקובץ יותר מפעם אחת (גם בשורה ${seenAt})`);
-    else ctx.skusInFile.set(sku, row);
+    if (seenAt !== undefined && seenAt !== labelOf(byRow.get(row))) fail(row, `המק"ט ${sku} מופיע בקובץ יותר מפעם אחת (גם ב${seenAt})`);
+    else ctx.skusInFile.set(sku, labelOf(byRow.get(row)));
   };
 
   if (hasVariants) {
+    const existingVariants = new Map();
+    for (const v of existing?.variants ?? []) {
+      existingVariants.set(comboKeyOf(v.optionValues ?? {}), v);
+      if (v.sku) existingVariants.set(`sku:${text(v.sku)}`, v);
+    }
     const optionNames = (variantRows[0].options ?? []).filter((o) => text(o.value)).map((o) => text(o.name));
     const valuesByOption = new Map(optionNames.map((n) => [n, []]));
     const combos = new Map();
@@ -197,10 +211,10 @@ function buildProduct(rows, ctx) {
       }
       const comboKey = optionNames.map((n) => optionValues[n]).join(' / ');
       if (combos.has(comboKey)) {
-        fail(r.row, `השילוב "${comboKey}" כבר מופיע בשורה ${combos.get(comboKey)}`);
+        fail(r.row, `השילוב "${comboKey}" כבר מופיע ב${combos.get(comboKey)}`);
         continue;
       }
-      combos.set(comboKey, r.row);
+      combos.set(comboKey, labelOf(r));
 
       const price = parseNumber(r.price, 'מחיר');
       if (price.error) fail(r.row, price.error);
@@ -212,12 +226,16 @@ function buildProduct(rows, ctx) {
 
       const sku = text(r.sku);
       claimSku(sku, r.row);
+      // Variants are rewritten from the file; a combination that already
+      // exists keeps its stock when the file leaves those cells empty.
+      const previous = existingVariants.get(comboKeyOf(optionValues)) ?? (sku && existingVariants.get(`sku:${sku}`));
+      const stockQuantity = stock.value ?? previous?.stockQuantity;
       variants.push({
         optionValues,
         price: price.value,
         sku: sku || undefined,
-        stockQuantity: stock.value,
-        inStock: inStock.value ?? (stock.value === 0 ? false : true),
+        stockQuantity,
+        inStock: inStock.value ?? previous?.inStock ?? (stockQuantity === 0 ? false : true),
       });
     }
 
@@ -271,7 +289,7 @@ export async function importProducts(req, res) {
 
   const [categories, products] = await Promise.all([
     Category.find().select('name parent').lean(),
-    Product.find().select('name sku variants.sku').lean(),
+    Product.find().select('name sku variants').lean(),
   ]);
 
   const ctx = {
@@ -287,14 +305,17 @@ export async function importProducts(req, res) {
   const errors = [];
   const warnings = [];
   const groups = new Map();
+  const skippedExamples = new Set();
   for (const r of rows) {
     const name = text(r.name);
     if (!name) {
-      errors.push({ row: r.row, message: 'חסר שם מוצר' });
+      errors.push({ row: r.row, label: labelOf(r), message: 'חסר שם מוצר' });
       continue;
     }
     if (name.startsWith(EXAMPLE_PREFIX)) {
-      warnings.push({ row: r.row, message: `שורת הדוגמה "${name}" דולגה` });
+      if (skippedExamples.has(key(name))) continue;
+      skippedExamples.add(key(name));
+      warnings.push({ row: r.row, label: labelOf(r), message: `שורת הדוגמה "${name}" דולגה` });
       continue;
     }
     const k = key(name);

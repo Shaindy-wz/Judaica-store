@@ -97,9 +97,15 @@ ProductSchema.virtual('hasVariants').get(function () {
   return (this.variants?.length ?? 0) > 1;
 });
 
+// A paid add-on is a yes/no option ("רקמת שם": לא / כן — see the product
+// import). The advertised range covers the product itself, not its add-ons.
+const isAddonOption = (o) => o.values?.length === 2 && o.values.includes('כן') && o.values.includes('לא');
+
 ProductSchema.virtual('priceRange').get(function () {
   if (!this.variants?.length) return { min: this.basePrice, max: this.basePrice };
-  const prices = this.variants.map((v) => v.price);
+  const addons = (this.options ?? []).filter(isAddonOption).map((o) => o.name);
+  const plain = this.variants.filter((v) => addons.every((name) => v.optionValues?.get(name) !== 'כן'));
+  const prices = (plain.length ? plain : this.variants).map((v) => v.price);
   return { min: Math.min(...prices), max: Math.max(...prices) };
 });
 

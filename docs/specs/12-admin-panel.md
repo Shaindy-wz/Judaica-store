@@ -37,13 +37,22 @@ Displays summary statistics and quick-action links:
 - Bulk actions: mark as featured, mark out of stock, delete
 
 ### Product import/export (Hebrew spec §22.1 — "ייבוא/ייצוא CSV בכמות")
-Toolbar on the product list: **הורדת תבנית**, **ייצוא לקובץ**, **ייבוא מקובץ** (`admin/components/ProductImportPanel.jsx`).
+Toolbar on the product list: **הורדת תבנית**, **ייצוא לקובץ**, **ייבוא מקובץ** (`admin/components/ProductImportPanel.jsx`). The file layout is the store's own workbook; all mapping lives in `frontend/src/utils/productSheet.js`.
 
-- **Format** (`frontend/src/utils/productSheet.js` is the single source of the columns): Hebrew headers, one row per product, or one row per option combination for a variant product (same name on every row; `אפשרות N - שם` / `אפשרות N - ערך` for up to 3 option dimensions; each row has its own price / SKU / stock). Shared product fields may sit on any of the product's rows. Category is the category name, or `הורה > תת` when a name exists under two parents. Yes/no cells take `כן`/`לא`. Images are full URLs separated by spaces
-- **Files**: `.xlsx`, or `.csv` in UTF-8 or Windows-1255 (Excel's plain CSV), delimited by `,` `;` or tab. Export and template are UTF-8 CSV with a BOM so Excel shows Hebrew correctly; an export can be edited and re-imported unchanged
-- **Flow**: the browser reads the file and posts the rows to `POST /api/admin/products/import` with `dryRun: true` → preview (new / updated counts, per-row Hebrew errors with spreadsheet row numbers) → **אישור וייבוא** posts again with `dryRun: false`. Any error blocks the whole file — nothing is written
-- **Matching**: an existing product is updated when its name matches, or (simple products) its SKU. Empty cells leave stored values unchanged. Rows of a product that has variants must include the option columns, so an import can never silently delete variants
-- Rows whose name starts with `דוגמה` (the template's examples) are skipped with a warning
+| Sheet | One row per | Columns |
+|---|---|---|
+| `מוצרים` | colour/size of a product | `מק"ט`, `שם המוצר`, `צבע/חומר`, `מידה`, `מחיר` — every column other than SKU / name / price / stock is an option dimension, named by its header |
+| `נתוני עזר` | colour (the sheet's drop-down list) | ignored on import; export writes the colours in use |
+| `מלאי ומוצרים` | product | `מק"ט (SKU)`, `שם המוצר`, `חומר` (→ `specs.material`), `גודל`, `קטגוריה`, `מחיר לצרכן`, `מחיר מבצע`, `אפשרויות`, `מחיר תוספת` |
+
+- Sheets are recognised by their headers (per-product sheet = has category / consumer price / sale price / add-on columns), so order and names do not matter, and a single-sheet CSV of either kind also works. `--` cells count as empty
+- **Joining**: rows are joined by product name. A product with rows in `מוצרים` becomes a variant product (one variant per row; an empty price takes the product price). `גודל` holding a comma list, with no `מוצרים` rows, becomes a `גודל` option; a single size is not stored (warning)
+- **Prices**: with a sale price, `basePrice` = sale and `originalPrice` = consumer price; an empty sale cell clears `originalPrice`
+- **Paid add-ons** (`אפשרויות` + `מחיר תוספת`, comma lists in the same order, up to 4): each becomes a yes/no option (`values: ['לא', 'כן']`) and every combination is created without and with it, the "כן" variant costing the extra price. This reuses the variant system, so cart and order pricing need no change. `Product.priceRange` ignores add-on variants
+- **Flow**: the browser reads the file and posts flat rows (one per purchasable combination) to `POST /api/admin/products/import` with `dryRun: true` → preview (new / updated counts, errors located as "sheet, row N") → **אישור וייבוא** posts again with `dryRun: false`. Any error blocks the whole file — nothing is written
+- **Matching**: an existing product is updated when its name matches, or (simple products) its SKU. Empty cells leave stored values unchanged; a variant that already exists keeps its stock. Rows of a product that has variants must include the option columns, so an import can never silently delete variants
+- Export → edit → re-import round-trips without changes. Names starting with `דוגמה` (the template's examples) are skipped with a warning
+- The earlier single-sheet columns (`שם מוצר *`, `אפשרות 1 - שם` / `אפשרות 1 - ערך`, ...) are still accepted on import
 
 ### Product Create/Edit Form (`AdminProductFormPage.jsx`)
 The form must support all fields in the Product model (§9):
