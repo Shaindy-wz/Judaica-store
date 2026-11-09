@@ -124,3 +124,6 @@
 
 .success { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); color: var(--color-success); font-weight: 600; }
 .success p { margin: 0; }
+
+/* A file being dragged over the panel. */
+.dragging { border-color: var(--color-gold); background: var(--color-surface-alt); }

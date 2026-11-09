@@ -76,7 +76,8 @@ This spec describes a full-stack Hebrew e-commerce store. The frontend (componen
 | **Shabbat times** | Hebcal API (free tier) | **Required** |
 | **Analytics** | Google Analytics 4 + Meta Pixel | **Required** |
 | **Search** | MongoDB text index + Hebrew normalisation on server (no Elasticsearch initially) | **Required** |
-| Spreadsheet import/export | `.xlsx` read with `read-excel-file` and written with `write-excel-file`; CSV parsed in-house (`utils/productSheet.js`). Both libraries are lazy-loaded in the admin panel only | Confirmed — see `12-admin-panel.md` §Product import/export |
+| Spreadsheet import/export | Any Excel format (`.xlsx`, `.xls`, `.xlsm`, `.ods`...) read with SheetJS (`xlsx` 0.20.3, installed from the official `cdn.sheetjs.com` tarball — the npm registry copy is outdated), including pictures pasted into the workbook (`utils/sheetImages.js`); written with `write-excel-file`; CSV parsed in-house (`utils/productSheet.js`). Both libraries are lazy-loaded in the admin panel only |
+| HEIC photos | `heic2any` converts iPhone photos to JPEG in the browser before upload; lazy-loaded only when such a photo is chosen | Confirmed — see `12-admin-panel.md` §Product import/export |
 | Hosting | Single Render web service (Express serves the API **and** the built React app) · DB: MongoDB Atlas | Confirmed — see §Deployment |
 
 ---
@@ -120,7 +121,7 @@ control panel and points at Render:
 | Type | Name | Value |
 |---|---|---|
 | A | `@` | `216.24.57.1` (Render's load balancer — confirm against the value Render shows) |
-| CNAME | `www` | the service's `*.onrender.com` host |
+| CNAME | `www` | `judaica-store-backend.onrender.com` (the service's own `*.onrender.com` host) |
 
 No AAAA record may exist on either name. The domain is added under the Render
 service's Settings → Custom Domains; Render adds `www` itself, redirects it to
@@ -148,7 +149,7 @@ Render's free plan stops the service after 15 minutes without traffic, and the
 next visitor waits ~50s for it to boot. The GitHub Actions workflow
 `.github/workflows/keep-warm.yml` pings `/api/health` every 10 minutes (it tries
 the `HEALTH_URL` repository variable, then `talidika.co.il`, then the default
-`judaica-store.onrender.com` address). GitHub may delay scheduled runs, so a
+`judaica-store-backend.onrender.com` address). GitHub may delay scheduled runs, so a
 paid Render instance — which never sleeps — remains the reliable fix; delete the
 workflow after upgrading.
 

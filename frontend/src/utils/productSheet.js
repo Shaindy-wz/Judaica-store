@@ -15,6 +15,8 @@
 // Paid add-ons become yes/no options ("רקמת שם": לא / כן) whose "כן" variants
 // cost the extra price, so they work with the existing variant system.
 
+import { readEmbeddedImages } from './sheetImages.js';
+
 const SHEET_VARIANTS = 'מוצרים';
 const SHEET_HELPER = 'נתוני עזר';
 const SHEET_CATALOG = 'מלאי ומוצרים';
@@ -35,22 +37,29 @@ const CATALOG_COLUMNS = [
   { key: 'salePrice', label: 'מחיר מבצע' },
   { key: 'addons', label: 'אפשרויות' },
   { key: 'addonPrices', label: 'מחיר תוספת' },
+  { key: 'images', label: 'תמונות' },
 ];
 
-// Header text → field. Matching ignores quote styles, brackets, "*" and spacing.
+// Header text → field. Matching ignores quote styles, brackets, "*", spacing
+// and a currency mark ("מחיר (₪)", "מחיר בש"ח" are both "מחיר").
 const normalizeHeader = (h) =>
-  String(h ?? '').replace(/[*"'״׳()]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+  String(h ?? '').replace(/[*"'״׳()[\]:₪]/g, '').replace(/(^|\s)ב?שח(?=\s|$)/g, ' ')
+    .replace(/\s+/g, ' ').trim().toLowerCase();
 const FIELD_BY_HEADER = new Map(Object.entries({
-  'מקט': 'sku', 'מקט sku': 'sku', 'sku': 'sku', 'ברקוד': 'sku',
-  'שם המוצר': 'name', 'שם מוצר': 'name',
-  'קטגוריה': 'category',
-  'מחיר לצרכן': 'consumerPrice', 'מחיר': 'price', 'מחיר מבצע': 'salePrice',
+  'מקט': 'sku', 'מקט sku': 'sku', 'sku': 'sku', 'ברקוד': 'sku', 'קוד מוצר': 'sku', 'מספר קטלוגי': 'sku',
+  'שם המוצר': 'name', 'שם מוצר': 'name', 'מוצר': 'name', 'שם פריט': 'name', 'פריט': 'name',
+  'product': 'name', 'product name': 'name',
+  'קטגוריה': 'category', 'קטגוריית מוצר': 'category', 'category': 'category',
+  'מחיר לצרכן': 'consumerPrice', 'מחיר': 'price', 'price': 'price', 'מחיר מבצע': 'salePrice',
   'מחיר לפני הנחה': 'originalPrice',
   'אפשרויות': 'addons', 'מחיר תוספת': 'addonPrices',
   'חומר': 'material', 'גודל': 'size',
   'כמות במלאי': 'stockQuantity', 'מלאי': 'stockQuantity', 'כמות': 'stockQuantity',
   'במלאי': 'inStock',
-  'תיאור': 'description', 'תג': 'badge', 'תגיות': 'tags', 'מומלץ': 'featured', 'תמונות': 'images',
+  'תיאור': 'description', 'תג': 'badge', 'תגיות': 'tags', 'מומלץ': 'featured',
+  'תמונות': 'images', 'תמונה': 'images', 'תמונה ראשית': 'images', 'תמונת מוצר': 'images', 'תמונות מוצר': 'images',
+  'קישור תמונה': 'images', 'קישור לתמונה': 'images', 'קישורי תמונות': 'images', 'קישורים לתמונות': 'images',
+  'image': 'images', 'images': 'images', 'picture': 'images', 'photo': 'images',
   'כשרות': 'kashrut', 'הכשר': 'hashgacha', 'עדה/מסורת': 'tradition', 'אומנות': 'craftsmanship',
   'ניתן להחזרה': 'returnable', 'מותאם אישית': 'customizable', 'סיבת אי-החזרה': 'nonReturnableReason',
   'כותרת seo': 'metaTitle', 'תיאור seo': 'metaDescription',
@@ -67,6 +76,9 @@ const SHARED_FIELDS = [
   'tradition', 'craftsmanship', 'returnable', 'customizable', 'nonReturnableReason', 'metaTitle',
   'metaDescription', 'originalPrice',
 ];
+// Product-level columns that are never an option, so the per-colour sheet may
+// carry them too (e.g. "תמונות"). "חומר" is left out: there it is an option column.
+for (const field of SHARED_FIELDS) if (field !== 'material') VARIANT_FIELDS.add(field);
 
 const key = (value) => String(value ?? '').trim().replace(/\s+/g, ' ').toLowerCase();
 const PLACEHOLDER = /^[-–—]+$/;
@@ -118,25 +130,77 @@ function decode(buffer) {
   }
 }
 
+// Excel's error values (an in-cell picture reads as one in some versions).
+const EXCEL_ERROR = /^#(VALUE|N\/A|REF|NAME|NULL|NUM|DIV\/0|SPILL|CALC|BLOCKED|FIELD|UNKNOWN|CONNECT|BUSY)[!?]?$/i;
+const SPREADSHEET = /\.(xlsx|xlsm|xltx|xltm|xlsb|xls|xlt|ods|fods|numbers)$/i;
+const ZIP_BASED = /\.(xlsx|xlsm|xltx|xltm)$/i;
+// Formula =IMAGE("https://...") shows a web picture in the cell; its link is
+// read as one of that row's images.
+const IMAGE_FORMULA = /^_?(?:xlfn\.)?IMAGE\(\s*"([^"]+)"/i;
+
+// Excel stores 12.3 as 12.299999999999999 after some formulas.
+const tidyNumber = (n) => (typeof n === 'number' && Number.isFinite(n) && !Number.isInteger(n)
+  ? parseFloat(n.toPrecision(12)) : n);
+
+async function readFileBytes(file) {
+  try {
+    return new Uint8Array(await file.arrayBuffer());
+  } catch {
+    throw new Error(`לא ניתן לקרוא את הקובץ "${file.name}". אם הוא פתוח ב-Excel — יש לסגור אותו ולבחור אותו שוב.`);
+  }
+}
+
+// Every sheet as rows of cells, plus the pictures inside the workbook.
+// Any Excel format opens (xlsx, old xls, xlsm, ods...); CSV is parsed here.
 async function readTables(file) {
-  if (/\.xlsx$/i.test(file.name)) {
-    const { default: readXlsxFile, readSheetNames } = await import('read-excel-file');
-    const names = await readSheetNames(file);
-    return Promise.all(names.map(async (name, i) => ({ name, rows: await readXlsxFile(file, { sheet: i + 1 }) })));
+  if (/\.(csv|txt|tsv)$/i.test(file.name) || file.type === 'text/csv') {
+    const rows = parseCsv(decode(await readFileBytes(file)));
+    return { tables: [{ name: file.name, firstRow: 1, rows }], images: new Map() };
   }
-  if (/\.(csv|txt)$/i.test(file.name)) {
-    return [{ name: file.name, rows: parseCsv(decode(await file.arrayBuffer())) }];
+  if (!SPREADSHEET.test(file.name) && !/spreadsheet|excel/i.test(file.type)) {
+    throw new Error(`הקובץ "${file.name}" אינו קובץ Excel. יש לבחור קובץ Excel (xlsx / xls) או CSV.`);
   }
-  throw new Error('יש לבחור קובץ Excel (.xlsx) או CSV. קובץ .xls ישן יש לשמור קודם כ-.xlsx');
+
+  const data = await readFileBytes(file);
+  const XLSX = await import('xlsx');
+  let workbook;
+  try {
+    workbook = XLSX.read(data, { type: 'array', cellDates: true, cellFormula: true });
+  } catch (e) {
+    if (/password|encrypt/i.test(e?.message ?? '')) {
+      throw new Error('הקובץ מוגן בסיסמה. יש להסיר את הסיסמה ב-Excel ולשמור שוב.', { cause: e });
+    }
+    throw new Error(`לא הצלחנו לפתוח את "${file.name}". יש לפתוח אותו ב-Excel, לשמור בשם (Save As) כ"חוברת עבודה של Excel (‎.xlsx)" ולנסות שוב.`, { cause: e });
+  }
+
+  const images = ZIP_BASED.test(file.name) ? readEmbeddedImages(XLSX, data) : new Map();
+  const tables = workbook.SheetNames.map((name) => {
+    const sheet = workbook.Sheets[name];
+    const range = sheet['!ref'] ? XLSX.utils.decode_range(sheet['!ref']) : null;
+    for (const [address, cell] of Object.entries(sheet)) {
+      const link = address[0] !== '!' && typeof cell?.f === 'string' && cell.f.match(IMAGE_FORMULA)?.[1];
+      if (!link) continue;
+      const { r, c } = XLSX.utils.decode_cell(address);
+      if (!images.has(name)) images.set(name, []);
+      images.get(name).push({ row: r + 1, lastRow: r + 1, col: c + 1, url: link });
+      Object.assign(cell, { t: 's', v: '', w: '' });
+    }
+    const rows = range
+      ? XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: '', blankrows: true })
+        .map((cells) => cells.map(tidyNumber))
+      : [];
+    return { name, firstRow: range ? range.s.r + 1 : 1, rows };
+  });
+  return { tables, images };
 }
 
 const cellText = (v) => {
   const s = v instanceof Date ? v.toISOString().slice(0, 10) : v == null ? '' : String(v).trim();
-  return PLACEHOLDER.test(s) ? '' : s;
+  return PLACEHOLDER.test(s) || EXCEL_ERROR.test(s) ? '' : s;
 };
 
 // Classifies one sheet and turns its rows into records.
-function readTable(table, labelRow, unknownHeaders) {
+function readTable(table, labelRow, unknownHeaders, sheetImages = []) {
   const headerIndex = table.rows.slice(0, 5).findIndex((cells) =>
     cells.some((h) => FIELD_BY_HEADER.get(normalizeHeader(h)) === 'name'));
   if (headerIndex === -1) return null; // e.g. the colour list in "נתוני עזר"
@@ -153,9 +217,10 @@ function readTable(table, labelRow, unknownHeaders) {
   }
 
   const records = [];
+  const recordAt = new Map();
   table.rows.slice(headerIndex + 1).forEach((cells, i) => {
-    const rowNumber = headerIndex + i + 2;
-    const record = { ...labelRow(table.name, rowNumber), dims: [], slots: {} };
+    const rowNumber = table.firstRow + headerIndex + i + 1;
+    const record = { ...labelRow(table.name, rowNumber), dims: [], slots: {}, media: [] };
     headers.forEach((h, c) => {
       const value = cellText(cells[c]);
       if (kind === 'variants' && !VARIANT_FIELDS.has(fields[c])) {
@@ -168,9 +233,22 @@ function readTable(table, labelRow, unknownHeaders) {
     });
     const hasData = record.name || record.sku || record.dims.some((d) => d.value) ||
       Object.values(record.slots).some(Boolean);
-    if (hasData) records.push(record);
+    if (hasData) {
+      records.push(record);
+      recordAt.set(rowNumber, record);
+    }
   });
-  return { kind, records };
+
+  // Each picture belongs to the product row it sits on (or overlaps).
+  const headerRow = table.firstRow + headerIndex;
+  const strayImages = [];
+  for (const image of sheetImages) {
+    let owner = null;
+    for (let row = image.row; row <= image.lastRow && !owner; row++) owner = recordAt.get(row);
+    if (owner) owner.media.push(image);
+    else if (image.lastRow > headerRow) strayImages.push(image.row);
+  }
+  return { kind, records, strayImages };
 }
 
 /**
@@ -179,7 +257,7 @@ function readTable(table, labelRow, unknownHeaders) {
  * — errors here are layout problems the server cannot see (e.g. add-on prices).
  */
 export async function readProductSheet(file) {
-  const tables = await readTables(file);
+  const { tables, images } = await readTables(file);
   const multiSheet = tables.length > 1;
   let nextId = 1;
   const labelRow = (sheet, rowNumber) => ({
@@ -195,15 +273,41 @@ export async function readProductSheet(file) {
   const flatRows = [];
   const order = [];
 
+  // Pictures, image links and picture file names, per product, in sheet order.
+  // They are taken out of the rows: the import panel uploads the pictures and
+  // puts the resulting links back (see resolveProductImages).
+  const imagesByProduct = new Map();
+  const collectImages = (record) => {
+    const sources = [
+      ...parseImageCell(record.images),
+      ...record.media.map((m) => (m.url
+        ? { kind: 'url', url: m.url }
+        : { kind: 'embedded', key: m.key, name: m.name, type: m.type, bytes: m.bytes })),
+    ];
+    delete record.images;
+    const k = key(record.name);
+    if (!sources.length || !k) return;
+    if (!imagesByProduct.has(k)) imagesByProduct.set(k, { name: record.name, label: record.label, sources: [] });
+    imagesByProduct.get(k).sources.push(...sources);
+  };
+
   for (const table of tables) {
-    const sheet = readTable(table, labelRow, unknownHeaders);
+    const sheet = readTable(table, labelRow, unknownHeaders, images.get(table.name));
     if (!sheet) continue;
+    if (sheet.strayImages.length) {
+      warnings.push({
+        row: 0,
+        label: table.name,
+        message: `התמונות בשורות ${[...new Set(sheet.strayImages)].join(', ')} לא נמצאות בשורה של מוצר ולכן לא ייובאו`,
+      });
+    }
     for (const record of sheet.records) {
+      collectImages(record);
       if (sheet.kind === 'flat') {
         const options = Object.entries(record.slots)
           .filter(([k]) => k.endsWith('-שם'))
           .map(([k, name]) => ({ name, value: record.slots[k.replace('-שם', '-ערך')] ?? '' }));
-        flatRows.push({ ...record, options, slots: undefined, dims: undefined });
+        flatRows.push({ ...record, options, slots: undefined, dims: undefined, media: undefined });
         continue;
       }
       const k = key(record.name);
@@ -232,9 +336,123 @@ export async function readProductSheet(file) {
   }
 
   if (!rows.length && !errors.length) {
-    throw new Error('לא נמצאו מוצרים בקובץ. בשורת הכותרות חייבת להופיע עמודה "שם המוצר" — מומלץ להתחיל מקובץ התבנית');
+    const firstRow = tables.flatMap((t) => t.rows.slice(0, 5))
+      .find((cells) => cells.filter((c) => cellText(c)).length > 1);
+    const seen = firstRow ? ` (בקובץ נמצאו העמודות: ${firstRow.map(cellText).filter(Boolean).join(', ')})` : '';
+    throw new Error(`לא נמצאו מוצרים בקובץ. באחת מ-5 השורות הראשונות צריכה להיות שורת כותרות עם עמודה "שם המוצר"${seen}. הכי פשוט להתחיל מ"הורדת תבנית".`);
   }
-  return { rows, unknownHeaders: [...unknownHeaders], errors, warnings };
+  for (const product of imagesByProduct.values()) product.sources = uniqueSources(product.sources);
+  return { rows, unknownHeaders: [...unknownHeaders], errors, warnings, imagesByProduct };
+}
+
+// ---------- Images ----------
+
+const URL_LIKE = /^(https?:\/\/|\/\/|\/)/i;
+
+// An images cell holds links and/or picture file names, separated by commas,
+// semicolons, "|" or new lines. Links may also be separated by spaces.
+export function parseImageCell(value) {
+  const sources = [];
+  for (const piece of String(value ?? '').split(/[\n,;|]+/).map((p) => p.trim()).filter(Boolean)) {
+    const words = piece.split(/\s+/);
+    const parts = words.length > 1 && words.every((w) => URL_LIKE.test(w)) ? words : [piece];
+    for (const part of parts) {
+      if (EXCEL_ERROR.test(part) || PLACEHOLDER.test(part)) continue;
+      if (URL_LIKE.test(part)) sources.push({ kind: 'url', url: part.startsWith('//') ? `https:${part}` : part });
+      // A full path (C:\Photos\talit.jpg) is matched by its file name.
+      else sources.push({ kind: 'file', name: part.split(/[\\/]/).pop() });
+    }
+  }
+  return sources;
+}
+
+// File names are matched without case, and "talit" also matches "talit.jpg".
+const fileKey = (name) => String(name ?? '').trim().toLowerCase();
+const stem = (name) => fileKey(name).replace(/\.[a-z0-9]{2,5}$/, '');
+
+function uniqueSources(sources) {
+  const seen = new Set();
+  return sources.filter((s) => {
+    const id = s.kind === 'url' ? `u:${s.url}` : s.kind === 'file' ? `f:${fileKey(s.name)}` : `e:${s.key}`;
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+}
+
+/** The picture the admin selected for a file name written in the sheet, if any. */
+export function findLocalImage(localFiles, name) {
+  const wanted = fileKey(name);
+  return localFiles.find((f) => fileKey(f.name) === wanted)
+    ?? localFiles.find((f) => stem(f.name) === stem(wanted))
+    ?? null;
+}
+
+/**
+ * Turns the images found in the sheet into rows the server accepts.
+ * With `upload` (a File → URL function) pictures are uploaded and their links
+ * written into each product's first row; without it (the preview) only the
+ * check runs. Returns { rows, errors, counts } — counts maps product key → images.
+ */
+export async function resolveProductImages(read, localFiles, upload, onProgress) {
+  const errors = [];
+  const counts = new Map();
+  const uploads = new Map(); // one upload per picture, even if used twice
+
+  for (const [k, product] of read.imagesByProduct) {
+    counts.set(k, product.sources.length);
+    for (const s of product.sources) {
+      if (s.kind === 'file' && !findLocalImage(localFiles, s.name)) {
+        errors.push({
+          row: 0,
+          label: product.label,
+          message: `התמונה "${s.name}" של "${product.name}" לא נבחרה — יש ללחוץ על "הוספת תמונות מהמחשב" ולבחור אותה (או להדביק את התמונה עצמה בתוך קובץ האקסל)`,
+        });
+      } else if (s.kind === 'file') {
+        const f = findLocalImage(localFiles, s.name);
+        uploads.set(`f:${fileKey(f.name)}`, f);
+      } else if (s.kind === 'embedded') {
+        uploads.set(`e:${s.key}`, new File([s.bytes], s.name, { type: s.type }));
+      }
+    }
+  }
+
+  const urls = new Map();
+  if (upload && !errors.length && uploads.size) {
+    const entries = [...uploads];
+    let done = 0;
+    onProgress?.(0, entries.length);
+    // A few at a time: fast, without flooding the server.
+    let next = 0;
+    const worker = async () => {
+      while (next < entries.length) {
+        const [id, file] = entries[next++];
+        urls.set(id, await upload(file));
+        onProgress?.(++done, entries.length);
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(3, entries.length) }, worker));
+  }
+
+  const firstRowOf = new Map();
+  for (const row of read.rows) {
+    const k = key(row.name);
+    if (!firstRowOf.has(k)) firstRowOf.set(k, row);
+  }
+  const rows = read.rows.map((row) => ({ ...row }));
+  const rowIndex = new Map(read.rows.map((row, i) => [row, i]));
+  for (const [k, product] of read.imagesByProduct) {
+    const first = firstRowOf.get(k);
+    if (!first) continue;
+    const links = product.sources.map((s) => {
+      if (s.kind === 'url') return s.url;
+      if (!upload) return null; // the preview checks links only
+      if (s.kind === 'file') return urls.get(`f:${fileKey(findLocalImage(localFiles, s.name)?.name)}`);
+      return urls.get(`e:${s.key}`);
+    }).filter(Boolean);
+    if (links.length) rows[rowIndex.get(first)].images = links.join(' ');
+  }
+  return { rows, errors, counts };
 }
 
 // One product (its catalog row and its per-colour rows) → server rows.
@@ -245,7 +463,10 @@ function expandProduct(cat, variantRecords) {
   const fail = (record, message) => errors.push({ row: record.row, label: record.label, message });
 
   const shared = { name: source.name };
-  for (const field of SHARED_FIELDS) if (cat?.[field]) shared[field] = cat[field];
+  for (const field of SHARED_FIELDS) {
+    const value = cat?.[field] || variantRecords.find((r) => r[field])?.[field];
+    if (value) shared[field] = value;
+  }
   // Consumer price is "before discount" when there is a sale price.
   const basePrice = cat ? (cat.salePrice || cat.consumerPrice || cat.price || '') : '';
   if (cat?.salePrice) shared.originalPrice = cat.consumerPrice;
@@ -376,6 +597,8 @@ function buildWorkbookRows(products, categoryTree) {
       salePrice: p.originalPrice ? p.basePrice : '',
       addons: addonOptions.map((a) => a.name).join(', '),
       addonPrices: addonOptions.map((a) => addonPrice(p, a.name)).join(', '),
+      // Full links, so they open from the spreadsheet and re-import unchanged.
+      images: (p.images ?? []).map((u) => (u.startsWith('/') ? window.location.origin + u : u)).join(', '),
     });
 
     if (!dims.length) continue;

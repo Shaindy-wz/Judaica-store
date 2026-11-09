@@ -16,13 +16,48 @@ export const deleteProduct = (id) => api.delete(`/admin/products/${id}`);
 // error carries the server's `errors` / `summary` fields.
 export const importProducts = (rows, dryRun) => api.post('/admin/products/import', { rows, dryRun });
 
-export async function uploadImageToCloudinary(file) {
-  const formData = new FormData();
-  formData.append('file', await compressImage(file));
+// A free-plan server that was asleep answers 502/503 or drops the connection
+// while it boots (~50s); those uploads are retried instead of failing.
+const RETRY_DELAYS_MS = [3000, 8000, 15000, 25000];
+const isTransient = (err) => err.status === 0 || err.status === 502 || err.status === 503 || err.status === 504;
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  const data = await api.upload('/admin/upload', formData);
-  if (!data?.url) throw new Error('העלאת התמונה נכשלה');
-  return data.url; // e.g. /api/images/<id>
+export async function uploadImage(file) {
+  const prepared = await compressImage(file);
+  for (let attempt = 0; ; attempt++) {
+    const formData = new FormData();
+    formData.append('file', prepared);
+    try {
+      const data = await api.upload('/admin/upload', formData);
+      if (!data?.url) throw new Error('העלאת התמונה נכשלה');
+      return data.url; // e.g. /api/images/<id>
+    } catch (err) {
+      if (!isTransient(err) || attempt >= RETRY_DELAYS_MS.length) {
+        throw new Error(`"${file.name}": ${err.message}`, { cause: err });
+      }
+      await wait(RETRY_DELAYS_MS[attempt]);
+    }
+  }
+}
+
+// Uploads several images a few at a time; onProgress(done, total).
+export async function uploadImages(files, onProgress) {
+  const results = new Array(files.length);
+  let next = 0;
+  let done = 0;
+  async function worker() {
+    while (next < files.length) {
+      const i = next++;
+      try {
+        results[i] = { status: 'fulfilled', value: await uploadImage(files[i]) };
+      } catch (reason) {
+        results[i] = { status: 'rejected', reason };
+      }
+      onProgress?.(++done, files.length);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(3, files.length) }, worker));
+  return results;
 }
 
 // Orders

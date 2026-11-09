@@ -47,8 +47,19 @@ export default function AdminProductFormPage() {
   const [categoriesTree, setCategoriesTree] = useState([]);
   const [selectedParentId, setSelectedParentId] = useState('');
   const [saving, setSaving] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
   const [error, setError] = useState('');
   const errorRef = useRef(null);
+  // Images as last loaded/saved: closing the tab with new, unsaved images warns first.
+  const [savedImages, setSavedImages] = useState('[]');
+  const imagesUnsaved = JSON.stringify(form.images) !== savedImages;
+
+  useEffect(() => {
+    if (!imagesUnsaved && !uploadingImages) return undefined;
+    const warn = (e) => { e.preventDefault(); e.returnValue = ''; };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [imagesUnsaved, uploadingImages]);
 
   useEffect(() => {
     getAdminCategories().then(setCategoriesTree);
@@ -77,6 +88,7 @@ export default function AdminProductFormPage() {
         const p = items.find((x) => x._id === id);
         if (!p) return;
         const { slug: _slug, ...rest } = p;
+        setSavedImages(JSON.stringify(p.images || []));
         setForm({
           ...EMPTY_FORM, ...rest,
           tags: (p.tags || []).join(', '),
@@ -155,6 +167,7 @@ export default function AdminProductFormPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (uploadingImages) return; // the images being uploaded would be lost
     setError('');
     setSaving(true);
     try {
@@ -175,6 +188,7 @@ export default function AdminProductFormPage() {
       } else {
         await createProduct(payload);
       }
+      setSavedImages(JSON.stringify(form.images));
       navigate('/admin/products');
     } catch (err) {
       setError(err.message || 'שגיאה בשמירה');
@@ -349,7 +363,19 @@ export default function AdminProductFormPage() {
         {/* Images */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>תמונות</h2>
-          <ImageUploader images={form.images} onChange={(imgs) => set('images', imgs)} />
+          <ImageUploader
+            images={form.images}
+            onChange={(next) => setForm((prev) => ({
+              ...prev,
+              images: typeof next === 'function' ? next(prev.images) : next,
+            }))}
+            onUploadingChange={setUploadingImages}
+          />
+          {imagesUnsaved && (
+            <p className={styles.hint} role="status">
+              התמונות יישמרו במוצר אחרי לחיצה על &quot;{isEdit ? 'שמור שינויים' : 'צור מוצר'}&quot; בתחתית הטופס.
+            </p>
+          )}
         </section>
 
         {/* Specs */}
@@ -423,8 +449,8 @@ export default function AdminProductFormPage() {
           <button type="button" onClick={() => navigate('/admin/products')} className={styles.cancelBtn}>
             ביטול
           </button>
-          <button type="submit" className={styles.saveBtn} disabled={saving}>
-            {saving ? 'שומר...' : isEdit ? 'שמור שינויים' : 'צור מוצר'}
+          <button type="submit" className={styles.saveBtn} disabled={saving || uploadingImages}>
+            {saving ? 'שומר...' : uploadingImages ? 'ממתין לסיום העלאת התמונות...' : isEdit ? 'שמור שינויים' : 'צור מוצר'}
           </button>
         </div>
       </form>

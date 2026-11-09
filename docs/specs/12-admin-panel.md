@@ -43,7 +43,7 @@ Toolbar on the product list: **הורדת תבנית**, **ייצוא לקובץ*
 |---|---|---|
 | `מוצרים` | colour/size of a product | `מק"ט`, `שם המוצר`, `צבע/חומר`, `מידה`, `מחיר` — every column other than SKU / name / price / stock is an option dimension, named by its header |
 | `נתוני עזר` | colour (the sheet's drop-down list) | ignored on import; export writes the colours in use |
-| `מלאי ומוצרים` | product | `מק"ט (SKU)`, `שם המוצר`, `חומר` (→ `specs.material`), `גודל`, `קטגוריה`, `מחיר לצרכן`, `מחיר מבצע`, `אפשרויות`, `מחיר תוספת` |
+| `מלאי ומוצרים` | product | `מק"ט (SKU)`, `שם המוצר`, `חומר` (→ `specs.material`), `גודל`, `קטגוריה`, `מחיר לצרכן`, `מחיר מבצע`, `אפשרויות`, `מחיר תוספת`, `תמונות` |
 
 - Sheets are recognised by their headers (per-product sheet = has category / consumer price / sale price / add-on columns), so order and names do not matter, and a single-sheet CSV of either kind also works. `--` cells count as empty
 - **Joining**: rows are joined by product name. A product with rows in `מוצרים` becomes a variant product (one variant per row; an empty price takes the product price). `גודל` holding a comma list, with no `מוצרים` rows, becomes a `גודל` option; a single size is not stored (warning)
@@ -53,6 +53,12 @@ Toolbar on the product list: **הורדת תבנית**, **ייצוא לקובץ*
 - **Matching**: an existing product is updated when its name matches, or (simple products) its SKU. Empty cells leave stored values unchanged; a variant that already exists keeps its stock. Rows of a product that has variants must include the option columns, so an import can never silently delete variants
 - Export → edit → re-import round-trips without changes. Names starting with `דוגמה` (the template's examples) are skipped with a warning
 - The earlier single-sheet columns (`שם מוצר *`, `אפשרות 1 - שם` / `אפשרות 1 - ערך`, ...) are still accepted on import
+- **File formats**: any spreadsheet opens — `.xlsx`, old `.xls`, `.xlsm`, `.xlsb`, `.ods` (read with SheetJS) and CSV (UTF-8 or Windows-1255, parsed in-house). The picker lists all of them, and a file can also be dragged onto the panel. Header matching is lenient: quotes, brackets, `₪` / `ש"ח` are ignored and common synonyms work (`מוצר`, `פריט` → name; `תמונה`, `קישור לתמונה` → images). A file with no product header names the headers it did find
+- **Images** — three ways, combinable per product (the first image is the main one):
+  1. A picture pasted into the workbook on the product's row: floating pictures (`xl/drawings`, anchored to the row they overlap) and Excel 365 "Place in Cell" pictures (`xl/richData`) are both extracted by `utils/sheetImages.js` (xlsx/xlsm only). Pictures on no product row are reported as a warning
+  2. A link in the `תמונות` column (`https://...` or `/api/images/...`), or an `=IMAGE("url")` formula
+  3. A file name in the `תמונות` column (e.g. `talit1.jpg`, or a full path) plus the picture chosen with **הוספת תמונות מהמחשב** (matched case-insensitively, extension optional). A name with no chosen picture is an error in the preview
+  Several per cell are separated by `,` `;` `|` or new lines. Pictures are uploaded (through `POST /api/admin/upload`, resized like the product form) only after **אישור וייבוא**, each once even if used by several products; the links are then written into the product's first row. A product with images in the file has its images replaced; a product without leaves them unchanged. Export writes the `תמונות` column with full links, so a round trip keeps them
 
 ### Product Create/Edit Form (`AdminProductFormPage.jsx`)
 The form must support all fields in the Product model (§9):
@@ -79,9 +85,12 @@ The form must support all fields in the Product model (§9):
 ### ImageUploader Component (`admin/components/ImageUploader.jsx`)
 - Drag-and-drop file upload
 - Uploads via `POST /api/admin/upload` (through `services/api.js`, so the auth cookie and `VITE_API_URL` are used); the server stores the image in MongoDB and returns a root-relative URL (`/api/images/:id`)
-- Resizes each photo in the browser first (`utils/compressImage.js`: longest side ≤1600px, JPEG 85%); HEIC files the browser cannot decode get a clear error asking for JPG
-- One failed file does not discard the others that uploaded
-- Shows upload progress and thumbnails
+- Resizes each photo in the browser first (`utils/compressImage.js`: longest side ≤1600px, JPEG 85%); iPhone HEIC photos that the browser cannot decode are converted to JPEG in the browser (`heic2any`, lazy-loaded)
+- Retries an upload up to 4 times (3s → 25s) when the server is waking up (502/503/504 or no connection), so the free host's cold start does not fail it
+- One failed file does not discard the others that uploaded; photos added while an earlier batch is uploading are kept (updater-style `onChange`)
+- Accepts drag-and-drop, click, and paste (Ctrl+V); shows "מעלה X מתוך Y" and thumbnails
+- While photos upload, the form's save button waits (`onUploadingChange`); new unsaved images show a reminder and closing the tab asks for confirmation
+- Error messages are always Hebrew (`services/api.js` maps 401/403/413/5xx, no connection, and NetFree's HTTP 418 block page to explanations)
 - Supports reordering images (first image = main product image)
 
 ---

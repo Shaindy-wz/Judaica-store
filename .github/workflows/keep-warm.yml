@@ -23,7 +23,7 @@ jobs:
         run: |
           # /api is never redirected, so both the custom domain and the
           # onrender.com address work; the first one that answers is enough.
-          for url in $HEALTH_URL https://talidika.co.il/api/health https://judaica-store.onrender.com/api/health; do
+          for url in $HEALTH_URL https://talidika.co.il/api/health https://judaica-store-backend.onrender.com/api/health; do
             if curl -fsS --max-time 90 "$url"; then
               echo; echo "OK: $url"; exit 0
             fi

@@ -28,17 +28,41 @@ async function decode(file) {
   }
 }
 
+// iPhone photos (HEIC) open only in Safari; elsewhere they are converted to
+// JPEG in the browser. The converter is large, so it loads only when needed.
+async function heicToJpeg(file) {
+  const { default: heic2any } = await import('heic2any');
+  const result = await heic2any({ blob: file, toType: 'image/jpeg', quality: JPEG_QUALITY });
+  const blob = Array.isArray(result) ? result[0] : result;
+  return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+}
+
+const IMAGE_EXTENSION = /\.(jpe?g|jfif|png|webp|gif|bmp|avif|tiff?|hei[cf])$/i;
+
 export async function compressImage(file) {
   if (PASS_THROUGH.has(file.type)) return file;
+  if (file.type && !file.type.startsWith('image/') && !IMAGE_EXTENSION.test(file.name)) {
+    throw new Error(`הקובץ "${file.name}" אינו תמונה`);
+  }
 
   let source;
   try {
     source = await decode(file);
   } catch {
     if (isHeic(file)) {
-      throw new Error(`הקובץ "${file.name}" בפורמט HEIC שהדפדפן לא תומך בו. יש לשמור אותו כ-JPG ולהעלות שוב.`);
+      try {
+        return compressImage(await heicToJpeg(file));
+      } catch {
+        throw new Error(`לא הצלחנו להמיר את התמונה "${file.name}" (HEIC). יש לשמור אותה כ-JPG ולהעלות שוב.`);
+      }
     }
     // Unknown to this browser but maybe fine for the server — let it decide.
+    // The server accepts only image types, so give the file one from its name.
+    if (!file.type && IMAGE_EXTENSION.test(file.name)) {
+      const ext = file.name.split('.').pop().toLowerCase();
+      const type = { jpg: 'jpeg', jfif: 'jpeg', tif: 'tiff' }[ext] ?? ext;
+      return new File([file], file.name, { type: `image/${type}` });
+    }
     return file;
   }
 
